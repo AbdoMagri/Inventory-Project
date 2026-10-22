@@ -1,10 +1,84 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Data;
+using InventoryDB_DataAccess;
 
-namespace InventoryDB_Buisness
+namespace InventoryDB_Business
 {
-    internal class clsUnit
+    public class clsUnit
     {
+        public enum enMode { AddNew = 0, Update = 1 };
+        public enMode Mode = enMode.AddNew;
+
+        public int UnitID { set; get; }
+        public string Name { set; get; }
+
+        public clsUnit()
+        {
+            this.UnitID = -1;
+            this.Name = "";
+            Mode = enMode.AddNew;
+        }
+
+        private clsUnit(int UnitID, string Name)
+        {
+            this.UnitID = UnitID;
+            this.Name = Name;
+            Mode = enMode.Update;
+        }
+
+        private bool _AddNewUnit()
+        {
+            this.UnitID = clsUnitData.AddNewUnit(this.Name);
+            return (this.UnitID != -1);
+        }
+
+        private bool _UpdateUnit()
+        {
+            return clsUnitData.UpdateUnit(this.UnitID, this.Name);
+        }
+
+        public static clsUnit Find(int UnitID)
+        {
+            string Name = "";
+
+            if (clsUnitData.GetUnitInfoByID(UnitID, ref Name))
+                return new clsUnit(UnitID, Name);
+            else
+                return null;
+        }
+
+        public bool Save()
+        {
+            switch (Mode)
+            {
+                case enMode.AddNew:
+                    if (_AddNewUnit())
+                    {
+                        Mode = enMode.Update;
+                        return true;
+                    }
+                    else
+                        return false;
+
+                case enMode.Update:
+                    return _UpdateUnit();
+            }
+            return false;
+        }
+
+        public static DataTable GetAllUnits()
+        {
+            return clsUnitData.GetAllUnits();
+        }
+
+        public static bool DeleteUnit(int UnitID)
+        {
+            return clsUnitData.DeleteUnit(UnitID);
+        }
+
+        public static bool isUnitExist(int UnitID)
+        {
+            return clsUnitData.IsUnitExist(UnitID);
+        }
     }
 }

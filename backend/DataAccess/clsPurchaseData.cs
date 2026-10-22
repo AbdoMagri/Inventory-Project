@@ -109,22 +109,22 @@ namespace InventoryDB_DataAccess
             return dt;
         }
 
-        public static bool DeletePurchase(int PurchaseID)
-        {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "DELETE Purchases WHERE PurchaseID = @PurchaseID";   // items are removed by ON DELETE CASCADE
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@PurchaseID", PurchaseID);
-            try
-            {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+        //public static bool DeletePurchase(int PurchaseID)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = "DELETE Purchases WHERE PurchaseID = @PurchaseID";   // items are removed by ON DELETE CASCADE
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@PurchaseID", PurchaseID);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception ex) { }
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
 
         public static bool IsPurchaseExist(int PurchaseID)
         {

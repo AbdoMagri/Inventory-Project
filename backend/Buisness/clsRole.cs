@@ -1,10 +1,84 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Data;
+using InventoryDB_DataAccess;
 
-namespace InventoryDB_Buisness
+namespace InventoryDB_Business
 {
-    internal class clsRole
+    public class clsRole
     {
+        public enum enMode { AddNew = 0, Update = 1 };
+        public enMode Mode = enMode.AddNew;
+
+        public int RoleID { set; get; }
+        public string Name { set; get; }
+
+        public clsRole()
+        {
+            this.RoleID = -1;
+            this.Name = "";
+            Mode = enMode.AddNew;
+        }
+
+        private clsRole(int RoleID, string Name)
+        {
+            this.RoleID = RoleID;
+            this.Name = Name;
+            Mode = enMode.Update;
+        }
+
+        private bool _AddNewRole()
+        {
+            this.RoleID = clsRoleData.AddNewRole(this.Name);
+            return (this.RoleID != -1);
+        }
+
+        private bool _UpdateRole()
+        {
+            return clsRoleData.UpdateRole(this.RoleID, this.Name);
+        }
+
+        public static clsRole Find(int RoleID)
+        {
+            string Name = "";
+
+            if (clsRoleData.GetRoleInfoByID(RoleID, ref Name))
+                return new clsRole(RoleID, Name);
+            else
+                return null;
+        }
+
+        public bool Save()
+        {
+            switch (Mode)
+            {
+                case enMode.AddNew:
+                    if (_AddNewRole())
+                    {
+                        Mode = enMode.Update;
+                        return true;
+                    }
+                    else
+                        return false;
+
+                case enMode.Update:
+                    return _UpdateRole();
+            }
+            return false;
+        }
+
+        public static DataTable GetAllRoles()
+        {
+            return clsRoleData.GetAllRoles();
+        }
+
+        public static bool DeleteRole(int RoleID)
+        {
+            return clsRoleData.DeleteRole(RoleID);
+        }
+
+        public static bool isRoleExist(int RoleID)
+        {
+            return clsRoleData.IsRoleExist(RoleID);
+        }
     }
 }
