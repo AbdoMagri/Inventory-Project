@@ -1,0 +1,19 @@
+
+# Visual Studio temporary files
+.vs/
+**/.vs/
+
+# Build outputs
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+
+# Node.js
+node_modules/
+dist/
+
+# Environment variables
+.env
