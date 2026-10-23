@@ -38,35 +38,35 @@ namespace InventoryDB_DataAccess
         }
 
         // Qty is signed: positive = stock in, negative = stock out
-        public static int AddNewMovement(int ProductID, int UserID, string MovementType,
-            int Qty, int? ReferenceID, string Note)
-        {
-            int MovementID = -1;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"INSERT INTO StockMovements (ProductID, UserID, MovementType, Qty, ReferenceID, Note)
-                             VALUES (@ProductID, @UserID, @MovementType, @Qty, @ReferenceID, @Note);
-                             SELECT SCOPE_IDENTITY();";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@ProductID", ProductID);
-            command.Parameters.AddWithValue("@UserID", UserID);
-            command.Parameters.AddWithValue("@MovementType", MovementType);
-            command.Parameters.AddWithValue("@Qty", Qty);
-            command.Parameters.AddWithValue("@ReferenceID", (object)ReferenceID ?? DBNull.Value);
-            if (!string.IsNullOrEmpty(Note))
-                command.Parameters.AddWithValue("@Note", Note);
-            else
-                command.Parameters.AddWithValue("@Note", DBNull.Value);
-            try
-            {
-                connection.Open();
-                object result = command.ExecuteScalar();
-                if (result != null && int.TryParse(result.ToString(), out int insertedID))
-                    MovementID = insertedID;
-            }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return MovementID;
-        }
+        //public static int AddNewMovement(int ProductID, int UserID, string MovementType,
+        //    int Qty, int? ReferenceID, string Note)
+        //{
+        //    int MovementID = -1;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = @"INSERT INTO StockMovements (ProductID, UserID, MovementType, Qty, ReferenceID, Note)
+        //                     VALUES (@ProductID, @UserID, @MovementType, @Qty, @ReferenceID, @Note);
+        //                     SELECT SCOPE_IDENTITY();";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@ProductID", ProductID);
+        //    command.Parameters.AddWithValue("@UserID", UserID);
+        //    command.Parameters.AddWithValue("@MovementType", MovementType);
+        //    command.Parameters.AddWithValue("@Qty", Qty);
+        //    command.Parameters.AddWithValue("@ReferenceID", (object)ReferenceID ?? DBNull.Value);
+        //    if (!string.IsNullOrEmpty(Note))
+        //        command.Parameters.AddWithValue("@Note", Note);
+        //    else
+        //        command.Parameters.AddWithValue("@Note", DBNull.Value);
+        //    try
+        //    {
+        //        connection.Open();
+        //        object result = command.ExecuteScalar();
+        //        if (result != null && int.TryParse(result.ToString(), out int insertedID))
+        //            MovementID = insertedID;
+        //    }
+        //    catch (Exception ex) { }
+        //    finally { connection.Close(); }
+        //    return MovementID;
+        //}
 
         public static DataTable GetMovementsByProductID(int ProductID)
         {

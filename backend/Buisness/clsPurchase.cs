@@ -40,18 +40,18 @@ namespace InventoryDB_Business
             Mode = enMode.Update;
         }
 
-        private bool _AddNewPurchase()
-        {
-            this.PurchaseID = clsPurchaseData.AddNewPurchase(this.AccountID, this.SupplierID,
-                this.UserID, this.PurchaseDate, this.Total);
-            return (this.PurchaseID != -1);
-        }
+        //private bool _AddNewPurchase()
+        //{
+        //    this.PurchaseID = clsPurchaseData.AddNewPurchase(this.AccountID, this.SupplierID,
+        //        this.UserID, this.PurchaseDate, this.Total);
+        //    return (this.PurchaseID != -1);
+        //}
 
-        private bool _UpdatePurchase()
-        {
-            return clsPurchaseData.UpdatePurchase(this.PurchaseID, this.SupplierID,
-                this.PurchaseDate, this.Total);
-        }
+        //private bool _UpdatePurchase()
+        //{
+        //    return clsPurchaseData.UpdatePurchase(this.PurchaseID, this.SupplierID,
+        //        this.PurchaseDate, this.Total);
+        //}
 
         public static clsPurchase Find(int PurchaseID)
         {
@@ -66,24 +66,24 @@ namespace InventoryDB_Business
                 return null;
         }
 
-        public bool Save()
-        {
-            switch (Mode)
-            {
-                case enMode.AddNew:
-                    if (_AddNewPurchase())
-                    {
-                        Mode = enMode.Update;
-                        return true;
-                    }
-                    else
-                        return false;
+        //public bool Save()
+        //{
+        //    switch (Mode)
+        //    {
+        //        case enMode.AddNew:
+        //            if (_AddNewPurchase())
+        //            {
+        //                Mode = enMode.Update;
+        //                return true;
+        //            }
+        //            else
+        //                return false;
 
-                case enMode.Update:
-                    return _UpdatePurchase();
-            }
-            return false;
-        }
+        //        case enMode.Update:
+        //            return _UpdatePurchase();
+        //    }
+        //    return false;
+        //}
 
         public DataTable GetItems()
         {

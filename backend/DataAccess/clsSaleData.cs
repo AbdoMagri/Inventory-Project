@@ -34,55 +34,55 @@ namespace InventoryDB_DataAccess
             return isFound;
         }
 
-        public static int AddNewSale(int AccountID, int? CustomerID, int UserID,
-            DateTime SaleDate, decimal Total)
-        {
-            int SaleID = -1;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"INSERT INTO Sales (AccountID, CustomerID, UserID, SaleDate, Total)
-                             VALUES (@AccountID, @CustomerID, @UserID, @SaleDate, @Total);
-                             SELECT SCOPE_IDENTITY();";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@AccountID", AccountID);
-            command.Parameters.AddWithValue("@CustomerID", (object)CustomerID ?? DBNull.Value);
-            command.Parameters.AddWithValue("@UserID", UserID);
-            command.Parameters.AddWithValue("@SaleDate", SaleDate);
-            command.Parameters.AddWithValue("@Total", Total);
-            try
-            {
-                connection.Open();
-                object result = command.ExecuteScalar();
-                if (result != null && int.TryParse(result.ToString(), out int insertedID))
-                    SaleID = insertedID;
-            }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return SaleID;
-        }
+        //public static int AddNewSale(int AccountID, int? CustomerID, int UserID,
+        //    DateTime SaleDate, decimal Total)
+        //{
+        //    int SaleID = -1;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = @"INSERT INTO Sales (AccountID, CustomerID, UserID, SaleDate, Total)
+        //                     VALUES (@AccountID, @CustomerID, @UserID, @SaleDate, @Total);
+        //                     SELECT SCOPE_IDENTITY();";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@AccountID", AccountID);
+        //    command.Parameters.AddWithValue("@CustomerID", (object)CustomerID ?? DBNull.Value);
+        //    command.Parameters.AddWithValue("@UserID", UserID);
+        //    command.Parameters.AddWithValue("@SaleDate", SaleDate);
+        //    command.Parameters.AddWithValue("@Total", Total);
+        //    try
+        //    {
+        //        connection.Open();
+        //        object result = command.ExecuteScalar();
+        //        if (result != null && int.TryParse(result.ToString(), out int insertedID))
+        //            SaleID = insertedID;
+        //    }
+        //    catch (Exception ex) { }
+        //    finally { connection.Close(); }
+        //    return SaleID;
+        //}
 
-        public static bool UpdateSale(int SaleID, int? CustomerID, DateTime SaleDate, decimal Total)
-        {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"UPDATE Sales
-                             SET CustomerID = @CustomerID,
-                                 SaleDate = @SaleDate,
-                                 Total = @Total
-                             WHERE SaleID = @SaleID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@SaleID", SaleID);
-            command.Parameters.AddWithValue("@CustomerID", (object)CustomerID ?? DBNull.Value);
-            command.Parameters.AddWithValue("@SaleDate", SaleDate);
-            command.Parameters.AddWithValue("@Total", Total);
-            try
-            {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception ex) { return false; }
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+        //public static bool UpdateSale(int SaleID, int? CustomerID, DateTime SaleDate, decimal Total)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = @"UPDATE Sales
+        //                     SET CustomerID = @CustomerID,
+        //                         SaleDate = @SaleDate,
+        //                         Total = @Total
+        //                     WHERE SaleID = @SaleID";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@SaleID", SaleID);
+        //    command.Parameters.AddWithValue("@CustomerID", (object)CustomerID ?? DBNull.Value);
+        //    command.Parameters.AddWithValue("@SaleDate", SaleDate);
+        //    command.Parameters.AddWithValue("@Total", Total);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception ex) { return false; }
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
 
         public static DataTable GetAllSales(int AccountID)
         {

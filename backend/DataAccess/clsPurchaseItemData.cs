@@ -33,53 +33,53 @@ namespace InventoryDB_DataAccess
             return isFound;
         }
 
-        public static int AddNewPurchaseItem(int PurchaseID, int ProductID, int Qty, decimal UnitCost)
-        {
-            int PurchaseItemID = -1;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"INSERT INTO PurchaseItems (PurchaseID, ProductID, Qty, UnitCost)
-                             VALUES (@PurchaseID, @ProductID, @Qty, @UnitCost);
-                             SELECT SCOPE_IDENTITY();";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@PurchaseID", PurchaseID);
-            command.Parameters.AddWithValue("@ProductID", ProductID);
-            command.Parameters.AddWithValue("@Qty", Qty);
-            command.Parameters.AddWithValue("@UnitCost", UnitCost);
-            try
-            {
-                connection.Open();
-                object result = command.ExecuteScalar();
-                if (result != null && int.TryParse(result.ToString(), out int insertedID))
-                    PurchaseItemID = insertedID;
-            }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return PurchaseItemID;
-        }
+        //public static int AddNewPurchaseItem(int PurchaseID, int ProductID, int Qty, decimal UnitCost)
+        //{
+        //    int PurchaseItemID = -1;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = @"INSERT INTO PurchaseItems (PurchaseID, ProductID, Qty, UnitCost)
+        //                     VALUES (@PurchaseID, @ProductID, @Qty, @UnitCost);
+        //                     SELECT SCOPE_IDENTITY();";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@PurchaseID", PurchaseID);
+        //    command.Parameters.AddWithValue("@ProductID", ProductID);
+        //    command.Parameters.AddWithValue("@Qty", Qty);
+        //    command.Parameters.AddWithValue("@UnitCost", UnitCost);
+        //    try
+        //    {
+        //        connection.Open();
+        //        object result = command.ExecuteScalar();
+        //        if (result != null && int.TryParse(result.ToString(), out int insertedID))
+        //            PurchaseItemID = insertedID;
+        //    }
+        //    catch (Exception ex) { }
+        //    finally { connection.Close(); }
+        //    return PurchaseItemID;
+        //}
 
-        public static bool UpdatePurchaseItem(int PurchaseItemID, int ProductID, int Qty, decimal UnitCost)
-        {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"UPDATE PurchaseItems
-                             SET ProductID = @ProductID,
-                                 Qty = @Qty,
-                                 UnitCost = @UnitCost
-                             WHERE PurchaseItemID = @PurchaseItemID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@PurchaseItemID", PurchaseItemID);
-            command.Parameters.AddWithValue("@ProductID", ProductID);
-            command.Parameters.AddWithValue("@Qty", Qty);
-            command.Parameters.AddWithValue("@UnitCost", UnitCost);
-            try
-            {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception ex) { return false; }
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+        //public static bool UpdatePurchaseItem(int PurchaseItemID, int ProductID, int Qty, decimal UnitCost)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = @"UPDATE PurchaseItems
+        //                     SET ProductID = @ProductID,
+        //                         Qty = @Qty,
+        //                         UnitCost = @UnitCost
+        //                     WHERE PurchaseItemID = @PurchaseItemID";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@PurchaseItemID", PurchaseItemID);
+        //    command.Parameters.AddWithValue("@ProductID", ProductID);
+        //    command.Parameters.AddWithValue("@Qty", Qty);
+        //    command.Parameters.AddWithValue("@UnitCost", UnitCost);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception ex) { return false; }
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
 
         public static DataTable GetItemsByPurchaseID(int PurchaseID)
         {
@@ -104,21 +104,21 @@ namespace InventoryDB_DataAccess
             return dt;
         }
 
-        public static bool DeletePurchaseItem(int PurchaseItemID)
-        {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "DELETE PurchaseItems WHERE PurchaseItemID = @PurchaseItemID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@PurchaseItemID", PurchaseItemID);
-            try
-            {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+        //public static bool DeletePurchaseItem(int PurchaseItemID)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = "DELETE PurchaseItems WHERE PurchaseItemID = @PurchaseItemID";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@PurchaseItemID", PurchaseItemID);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception ex) { }
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
     }
 }

@@ -42,21 +42,54 @@ namespace InventoryDB_Business
             Mode = enMode.Update;
         }
 
-        private bool _AddNewSale()
-        {
-            this.SaleID = clsSaleData.AddNewSale(this.AccountID, this.CustomerID,
-                this.UserID, this.SaleDate, this.Total);
-            return (this.SaleID != -1);
-        }
+        //private bool _AddNewSale()
+        //{
+        //    this.SaleID = clsSaleData.AddNewSale(this.AccountID, this.CustomerID,
+        //        this.UserID, this.SaleDate, this.Total);
+        //    return (this.SaleID != -1);
+        //}
 
-        private bool _UpdateSale()
-        {
-            return clsSaleData.UpdateSale(this.SaleID, this.CustomerID, this.SaleDate, this.Total);
-        }
+        //private bool _UpdateSale()
+        //{
+        //    return clsSaleData.UpdateSale(this.SaleID, this.CustomerID, this.SaleDate, this.Total);
+        //}
+
+        //public static clsSale Find(int SaleID)
+        //{
+        //    int AccountID = -1, UserID = -1;
+        //    int? CustomerID = null;
+        //    DateTime SaleDate = DateTime.Now;
+        //    decimal Total = 0;
+
+        //    if (clsSaleData.GetSaleInfoByID(SaleID, ref AccountID, ref CustomerID,
+        //        ref UserID, ref SaleDate, ref Total))
+        //        return new clsSale(SaleID, AccountID, CustomerID, UserID, SaleDate, Total);
+        //    else
+        //        return null;
+        //}
+
+        //public bool Save()
+        //{
+        //    switch (Mode)
+        //    {
+        //        case enMode.AddNew:
+        //            if (_AddNewSale())
+        //            {
+        //                Mode = enMode.Update;
+        //                return true;
+        //            }
+        //            else
+        //                return false;
+
+        //        case enMode.Update:
+        //            return _UpdateSale();
+        //    }
+        //    return false;
+        //}
 
         public static clsSale Find(int SaleID)
         {
-            int AccountID = -1, UserID = -1;
+            int AccountID = -1,  UserID = -1;
             int? CustomerID = null;
             DateTime SaleDate = DateTime.Now;
             decimal Total = 0;
@@ -66,25 +99,6 @@ namespace InventoryDB_Business
                 return new clsSale(SaleID, AccountID, CustomerID, UserID, SaleDate, Total);
             else
                 return null;
-        }
-
-        public bool Save()
-        {
-            switch (Mode)
-            {
-                case enMode.AddNew:
-                    if (_AddNewSale())
-                    {
-                        Mode = enMode.Update;
-                        return true;
-                    }
-                    else
-                        return false;
-
-                case enMode.Update:
-                    return _UpdateSale();
-            }
-            return false;
         }
 
         public DataTable GetItems()

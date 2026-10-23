@@ -106,18 +106,18 @@ namespace InventoryDB_Business
         }
 
         // QtyChange is signed: +10 stock in, -3 stock out
-        public bool ChangeQuantity(int QtyChange)
-        {
-            if (Mode != enMode.Update)
-                return false;
+        //public bool ChangeQuantity(int QtyChange)
+        //{
+        //    if (Mode != enMode.Update)
+        //        return false;
 
-            if (clsProductData.UpdateProductQuantity(this.ProductID, QtyChange))
-            {
-                this.Quantity += QtyChange;
-                return true;
-            }
-            return false;
-        }
+        //    if (clsProductData.UpdateProductQuantity(this.ProductID, QtyChange))
+        //    {
+        //        this.Quantity += QtyChange;
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
         public bool Save()
         {

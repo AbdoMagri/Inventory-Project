@@ -34,55 +34,55 @@ namespace InventoryDB_DataAccess
             return isFound;
         }
 
-        public static int AddNewPurchase(int AccountID, int SupplierID, int UserID,
-            DateTime PurchaseDate, decimal Total)
-        {
-            int PurchaseID = -1;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"INSERT INTO Purchases (AccountID, SupplierID, UserID, PurchaseDate, Total)
-                             VALUES (@AccountID, @SupplierID, @UserID, @PurchaseDate, @Total);
-                             SELECT SCOPE_IDENTITY();";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@AccountID", AccountID);
-            command.Parameters.AddWithValue("@SupplierID", SupplierID);
-            command.Parameters.AddWithValue("@UserID", UserID);
-            command.Parameters.AddWithValue("@PurchaseDate", PurchaseDate);
-            command.Parameters.AddWithValue("@Total", Total);
-            try
-            {
-                connection.Open();
-                object result = command.ExecuteScalar();
-                if (result != null && int.TryParse(result.ToString(), out int insertedID))
-                    PurchaseID = insertedID;
-            }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return PurchaseID;
-        }
+        //public static int AddNewPurchase(int AccountID, int SupplierID, int UserID,
+        //    DateTime PurchaseDate, decimal Total)
+        //{
+        //    int PurchaseID = -1;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = @"INSERT INTO Purchases (AccountID, SupplierID, UserID, PurchaseDate, Total)
+        //                     VALUES (@AccountID, @SupplierID, @UserID, @PurchaseDate, @Total);
+        //                     SELECT SCOPE_IDENTITY();";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@AccountID", AccountID);
+        //    command.Parameters.AddWithValue("@SupplierID", SupplierID);
+        //    command.Parameters.AddWithValue("@UserID", UserID);
+        //    command.Parameters.AddWithValue("@PurchaseDate", PurchaseDate);
+        //    command.Parameters.AddWithValue("@Total", Total);
+        //    try
+        //    {
+        //        connection.Open();
+        //        object result = command.ExecuteScalar();
+        //        if (result != null && int.TryParse(result.ToString(), out int insertedID))
+        //            PurchaseID = insertedID;
+        //    }
+        //    catch (Exception ex) { }
+        //    finally { connection.Close(); }
+        //    return PurchaseID;
+        //}
 
-        public static bool UpdatePurchase(int PurchaseID, int SupplierID, DateTime PurchaseDate, decimal Total)
-        {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"UPDATE Purchases
-                             SET SupplierID = @SupplierID,
-                                 PurchaseDate = @PurchaseDate,
-                                 Total = @Total
-                             WHERE PurchaseID = @PurchaseID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@PurchaseID", PurchaseID);
-            command.Parameters.AddWithValue("@SupplierID", SupplierID);
-            command.Parameters.AddWithValue("@PurchaseDate", PurchaseDate);
-            command.Parameters.AddWithValue("@Total", Total);
-            try
-            {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception ex) { return false; }
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+        //public static bool UpdatePurchase(int PurchaseID, int SupplierID, DateTime PurchaseDate, decimal Total)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = @"UPDATE Purchases
+        //                     SET SupplierID = @SupplierID,
+        //                         PurchaseDate = @PurchaseDate,
+        //                         Total = @Total
+        //                     WHERE PurchaseID = @PurchaseID";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@PurchaseID", PurchaseID);
+        //    command.Parameters.AddWithValue("@SupplierID", SupplierID);
+        //    command.Parameters.AddWithValue("@PurchaseDate", PurchaseDate);
+        //    command.Parameters.AddWithValue("@Total", Total);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception ex) { return false; }
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
 
         public static DataTable GetAllPurchases(int AccountID)
         {

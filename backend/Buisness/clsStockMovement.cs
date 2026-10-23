@@ -48,12 +48,12 @@ namespace InventoryDB_Business
             Mode = enMode.Update;
         }
 
-        private bool _AddNewMovement()
-        {
-            this.MovementID = clsStockMovementData.AddNewMovement(this.ProductID, this.UserID,
-                this.MovementType.ToString(), this.Qty, this.ReferenceID, this.Note);
-            return (this.MovementID != -1);
-        }
+        //private bool _AddNewMovement()
+        //{
+        //    this.MovementID = clsStockMovementData.AddNewMovement(this.ProductID, this.UserID,
+        //        this.MovementType.ToString(), this.Qty, this.ReferenceID, this.Note);
+        //    return (this.MovementID != -1);
+        //}
 
         public static clsStockMovement Find(int MovementID)
         {
@@ -71,24 +71,24 @@ namespace InventoryDB_Business
                 return null;
         }
 
-        public bool Save()
-        {
-            switch (Mode)
-            {
-                case enMode.AddNew:
-                    if (_AddNewMovement())
-                    {
-                        Mode = enMode.Update;
-                        return true;
-                    }
-                    else
-                        return false;
+        //public bool Save()
+        //{
+        //    switch (Mode)
+        //    {
+        //        case enMode.AddNew:
+        //            if (_AddNewMovement())
+        //            {
+        //                Mode = enMode.Update;
+        //                return true;
+        //            }
+        //            else
+        //                return false;
 
-                case enMode.Update:
-                    return false;   // log records are never edited
-            }
-            return false;
-        }
+        //        case enMode.Update:
+        //            return false;   // log records are never edited
+        //    }
+        //    return false;
+        //}
 
         public static DataTable GetMovementsByProductID(int ProductID)
         {

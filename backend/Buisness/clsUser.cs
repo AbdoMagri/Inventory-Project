@@ -156,5 +156,10 @@ namespace InventoryDB_Business
         {
             return clsUserData.IsUserExist(UserName);
         }
+
+        public bool Can(clsPermissions.enPermission Permission)
+        {
+            return clsPermissions.HasPermission(this.RoleID, Permission);
+        }
     }
 }

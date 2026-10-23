@@ -149,23 +149,23 @@ namespace InventoryDB_DataAccess
         }
 
         // QtyChange is signed: +10 stock in, -3 stock out
-        public static bool UpdateProductQuantity(int ProductID, int QtyChange)
-        {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "UPDATE Products SET Quantity = Quantity + @QtyChange WHERE ProductID = @ProductID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@ProductID", ProductID);
-            command.Parameters.AddWithValue("@QtyChange", QtyChange);
-            try
-            {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception ex) { return false; }   // CK_Products_Stock fails here if stock would go below 0
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+        //public static bool UpdateProductQuantity(int ProductID, int QtyChange)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = "UPDATE Products SET Quantity = Quantity + @QtyChange WHERE ProductID = @ProductID";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@ProductID", ProductID);
+        //    command.Parameters.AddWithValue("@QtyChange", QtyChange);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception ex) { return false; }   // CK_Products_Stock fails here if stock would go below 0
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
 
         public static DataTable GetAllProducts(int AccountID)
         {

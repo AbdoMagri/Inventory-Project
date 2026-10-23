@@ -6,7 +6,7 @@ namespace InventoryDB_DataAccess
 {
     public class clsAccountData
     {
-        public static bool GetAccountInfoByID(int AccountID, ref string Name, ref DateTime CreatedAt)
+        public static bool GetAccountInfoByID(int AccountID, ref string Name, ref DateTime CreatedAt, ref string ImagePath)
         {
             bool isFound = false;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -22,6 +22,7 @@ namespace InventoryDB_DataAccess
                     isFound = true;
                     Name = (string)reader["Name"];
                     CreatedAt = (DateTime)reader["CreatedAt"];
+                    ImagePath = reader["ImagePath"] != DBNull.Value ? (string)reader["ImagePath"] : "";
                 }
                 reader.Close();
             }
@@ -30,14 +31,16 @@ namespace InventoryDB_DataAccess
             return isFound;
         }
 
-        public static int AddNewAccount(string Name)
+        public static int AddNewAccount(string Name, string ImagePath)
         {
             int AccountID = -1;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"INSERT INTO Accounts (Name) VALUES (@Name);
-                             SELECT SCOPE_IDENTITY();";
+            string query = @"INSERT INTO Accounts (Name, ImagePath) VALUES (@Name, @ImagePath);
+                 SELECT SCOPE_IDENTITY();";
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@Name", Name);
+            command.Parameters.AddWithValue("@ImagePath",
+    string.IsNullOrEmpty(ImagePath) ? (object)DBNull.Value : ImagePath);
             try
             {
                 connection.Open();
@@ -50,14 +53,19 @@ namespace InventoryDB_DataAccess
             return AccountID;
         }
 
-        public static bool UpdateAccount(int AccountID, string Name)
+        public static bool UpdateAccount(int AccountID, string Name, string ImagePath)
         {
             int rowsAffected = 0;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "UPDATE Accounts SET Name = @Name WHERE AccountID = @AccountID";
+            string query = @"UPDATE Accounts
+                 SET Name = @Name,
+                     ImagePath = @ImagePath
+                 WHERE AccountID = @AccountID";
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountID", AccountID);
             command.Parameters.AddWithValue("@Name", Name);
+            command.Parameters.AddWithValue("@ImagePath",
+    string.IsNullOrEmpty(ImagePath) ? (object)DBNull.Value : ImagePath);
             try
             {
                 connection.Open();

@@ -36,18 +36,18 @@ namespace InventoryDB_Business
             Mode = enMode.Update;
         }
 
-        private bool _AddNewPurchaseItem()
-        {
-            this.PurchaseItemID = clsPurchaseItemData.AddNewPurchaseItem(this.PurchaseID,
-                this.ProductID, this.Qty, this.UnitCost);
-            return (this.PurchaseItemID != -1);
-        }
+        //private bool _AddNewPurchaseItem()
+        //{
+        //    this.PurchaseItemID = clsPurchaseItemData.AddNewPurchaseItem(this.PurchaseID,
+        //        this.ProductID, this.Qty, this.UnitCost);
+        //    return (this.PurchaseItemID != -1);
+        //}
 
-        private bool _UpdatePurchaseItem()
-        {
-            return clsPurchaseItemData.UpdatePurchaseItem(this.PurchaseItemID,
-                this.ProductID, this.Qty, this.UnitCost);
-        }
+        //private bool _UpdatePurchaseItem()
+        //{
+        //    return clsPurchaseItemData.UpdatePurchaseItem(this.PurchaseItemID,
+        //        this.ProductID, this.Qty, this.UnitCost);
+        //}
 
         public static clsPurchaseItem Find(int PurchaseItemID)
         {
@@ -61,33 +61,33 @@ namespace InventoryDB_Business
                 return null;
         }
 
-        public bool Save()
-        {
-            switch (Mode)
-            {
-                case enMode.AddNew:
-                    if (_AddNewPurchaseItem())
-                    {
-                        Mode = enMode.Update;
-                        return true;
-                    }
-                    else
-                        return false;
+        //public bool Save()
+        //{
+        //    switch (Mode)
+        //    {
+        //        case enMode.AddNew:
+        //            if (_AddNewPurchaseItem())
+        //            {
+        //                Mode = enMode.Update;
+        //                return true;
+        //            }
+        //            else
+        //                return false;
 
-                case enMode.Update:
-                    return _UpdatePurchaseItem();
-            }
-            return false;
-        }
+        //        case enMode.Update:
+        //            return _UpdatePurchaseItem();
+        //    }
+        //    return false;
+        //}
 
         public static DataTable GetItemsByPurchaseID(int PurchaseID)
         {
             return clsPurchaseItemData.GetItemsByPurchaseID(PurchaseID);
         }
 
-        public static bool DeletePurchaseItem(int PurchaseItemID)
-        {
-            return clsPurchaseItemData.DeletePurchaseItem(PurchaseItemID);
-        }
+        //public static bool DeletePurchaseItem(int PurchaseItemID)
+        //{
+        //    return clsPurchaseItemData.DeletePurchaseItem(PurchaseItemID);
+        //}
     }
 }

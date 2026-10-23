@@ -41,18 +41,18 @@ namespace InventoryDB_Business
             Mode = enMode.Update;
         }
 
-        private bool _AddNewSaleItem()
-        {
-            this.SaleItemID = clsSaleItemData.AddNewSaleItem(this.SaleID, this.ProductID,
-                this.Qty, this.UnitPrice, this.UnitCost);
-            return (this.SaleItemID != -1);
-        }
+        //private bool _AddNewSaleItem()
+        //{
+        //    this.SaleItemID = clsSaleItemData.AddNewSaleItem(this.SaleID, this.ProductID,
+        //        this.Qty, this.UnitPrice, this.UnitCost);
+        //    return (this.SaleItemID != -1);
+        //}
 
-        private bool _UpdateSaleItem()
-        {
-            return clsSaleItemData.UpdateSaleItem(this.SaleItemID, this.ProductID,
-                this.Qty, this.UnitPrice, this.UnitCost);
-        }
+        //private bool _UpdateSaleItem()
+        //{
+        //    return clsSaleItemData.UpdateSaleItem(this.SaleItemID, this.ProductID,
+        //        this.Qty, this.UnitPrice, this.UnitCost);
+        //}
 
         public static clsSaleItem Find(int SaleItemID)
         {
@@ -66,33 +66,33 @@ namespace InventoryDB_Business
                 return null;
         }
 
-        public bool Save()
-        {
-            switch (Mode)
-            {
-                case enMode.AddNew:
-                    if (_AddNewSaleItem())
-                    {
-                        Mode = enMode.Update;
-                        return true;
-                    }
-                    else
-                        return false;
+        //public bool Save()
+        //{
+        //    switch (Mode)
+        //    {
+        //        case enMode.AddNew:
+        //            if (_AddNewSaleItem())
+        //            {
+        //                Mode = enMode.Update;
+        //                return true;
+        //            }
+        //            else
+        //                return false;
 
-                case enMode.Update:
-                    return _UpdateSaleItem();
-            }
-            return false;
-        }
+        //        case enMode.Update:
+        //            return _UpdateSaleItem();
+        //    }
+        //    return false;
+        //}
 
         public static DataTable GetItemsBySaleID(int SaleID)
         {
             return clsSaleItemData.GetItemsBySaleID(SaleID);
         }
 
-        public static bool DeleteSaleItem(int SaleItemID)
-        {
-            return clsSaleItemData.DeleteSaleItem(SaleItemID);
-        }
+        //public static bool DeleteSaleItem(int SaleItemID)
+        //{
+        //    return clsSaleItemData.DeleteSaleItem(SaleItemID);
+        //}
     }
 }

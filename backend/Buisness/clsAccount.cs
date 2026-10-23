@@ -12,6 +12,7 @@ namespace InventoryDB_Business
         public int AccountID { set; get; }
         public string Name { set; get; }
         public DateTime CreatedAt { set; get; }
+        public string ImagePath { set; get; }
 
         public clsAccount()
         {
@@ -19,34 +20,37 @@ namespace InventoryDB_Business
             this.Name = "";
             this.CreatedAt = DateTime.Now;
             Mode = enMode.AddNew;
+            this.ImagePath = "";
         }
 
-        private clsAccount(int AccountID, string Name, DateTime CreatedAt)
+        private clsAccount(int AccountID, string Name, DateTime CreatedAt, string ImagePath)
         {
             this.AccountID = AccountID;
             this.Name = Name;
             this.CreatedAt = CreatedAt;
             Mode = enMode.Update;
+            this.ImagePath = ImagePath;
         }
 
         private bool _AddNewAccount()
         {
-            this.AccountID = clsAccountData.AddNewAccount(this.Name);
+            this.AccountID = clsAccountData.AddNewAccount(this.Name, this.ImagePath);
             return (this.AccountID != -1);
         }
 
         private bool _UpdateAccount()
         {
-            return clsAccountData.UpdateAccount(this.AccountID, this.Name);
+            return clsAccountData.UpdateAccount(this.AccountID, this.Name, this.ImagePath);
         }
 
         public static clsAccount Find(int AccountID)
         {
             string Name = "";
             DateTime CreatedAt = DateTime.Now;
+            string ImagePath = "";
 
-            if (clsAccountData.GetAccountInfoByID(AccountID, ref Name, ref CreatedAt))
-                return new clsAccount(AccountID, Name, CreatedAt);
+            if (clsAccountData.GetAccountInfoByID(AccountID, ref Name, ref CreatedAt, ref ImagePath))
+                return new clsAccount(AccountID, Name, CreatedAt, ImagePath);
             else
                 return null;
         }
