@@ -26,7 +26,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception ex) { isFound = false;  }
             finally { connection.Close(); }
             return isFound;
         }

@@ -28,6 +28,28 @@ namespace InventoryDB_DataAccess
             finally { connection.Close(); }
             return isFound;
         }
+        public static bool GetRoleInfoByName(string Name, ref int RoleID)
+        {
+            bool isFound = false;
+            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+            string query = "SELECT * FROM Roles WHERE Name = @Name";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Name", Name);
+            try
+            {
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    isFound = true;
+                    RoleID = (int)reader["RoleID"];
+                }
+                reader.Close();
+            }
+            catch (Exception ex) { isFound = false; }
+            finally { connection.Close(); }
+            return isFound;
+        }
 
         public static int AddNewRole(string Name)
         {

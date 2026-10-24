@@ -6,6 +6,20 @@ namespace InventoryDB_DataAccess
 {
     public class clsUserData
     {
+        public class UserDTO
+        {
+            public UserDTO(int id, string username,string roleName, bool isActive) { 
+                this.Id = id;
+                this.UserName = username;
+                this.RoleName = roleName;
+                this.IsActive = isActive;
+               
+            }
+            public int Id { get; set; }
+            public string UserName { get; set; }
+            public string RoleName { get; set; }
+            public bool IsActive { get; set; }
+        }
         public static bool GetUserInfoByUserID(int UserID, ref int AccountID, ref int RoleID,
             ref string UserName, ref string PasswordHash, ref bool IsActive)
         {
@@ -132,9 +146,10 @@ namespace InventoryDB_DataAccess
             return (rowsAffected > 0);
         }
 
-        public static DataTable GetAllUsers(int AccountID)
+        public static List<UserDTO> GetAllUsers(int AccountID)
         {
-            DataTable dt = new DataTable();
+            var UsersList = new List<UserDTO>();
+            
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
             string query = @"SELECT Users.UserID, Users.UserName, RoleName = Roles.Name, Users.IsActive
                              FROM Users INNER JOIN Roles ON Users.RoleID = Roles.RoleID
@@ -145,12 +160,19 @@ namespace InventoryDB_DataAccess
             {
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+                while (reader.Read()) {
+                    UsersList.Add(new UserDTO(
+                        (int)reader["UserID"],
+                        (string)reader["UserName"],
+                        (string)reader["RoleName"],
+                        (bool)reader["IsActive"]
+                        ));
+                }
                 reader.Close();
             }
-            catch (Exception ex) { }
+            catch (Exception ex) { throw; }
             finally { connection.Close(); }
-            return dt;
+            return UsersList;
         }
 
         public static bool DeleteUser(int UserID)

@@ -7,8 +7,14 @@ namespace InventoryDB_Business
 {
     public class clsUser
     {
+
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
+
+        public clsUserData.UserDTO UDTO
+        {
+            get { return (new clsUserData.UserDTO(this.UserID, this.UserName, this.RoleInfo.Name, this.IsActive)); }
+        }
 
         public int UserID { set; get; }
         public int AccountID { set; get; }
@@ -27,15 +33,26 @@ namespace InventoryDB_Business
             Mode = enMode.AddNew;
         }
 
+        public clsUser(clsUserData.UserDTO UDTO,int AccountID,string Password, enMode cMode = enMode.AddNew)
+        {
+            this.UserID = UDTO.Id;
+            this.AccountID = AccountID;
+            this.RoleID = clsRole.FindByName(UDTO.RoleName).RoleID;
+            this.RoleInfo = clsRole.Find(RoleID);
+            this.UserName = UDTO.UserName;
+            this.PasswordHash = BCrypt.Net.BCrypt.HashPassword(Password); ;
+            this.IsActive = UDTO.IsActive;
+            Mode = cMode;
+        }
         private clsUser(int UserID, int AccountID, int RoleID, string UserName,
-            string PasswordHash, bool IsActive)
+            string Password, bool IsActive)
         {
             this.UserID = UserID;
             this.AccountID = AccountID;
             this.RoleID = RoleID;
             this.RoleInfo = clsRole.Find(RoleID);
             this.UserName = UserName;
-            this.PasswordHash = PasswordHash;
+            this.PasswordHash = BCrypt.Net.BCrypt.HashPassword(Password); ;
             this.IsActive = IsActive;
             Mode = enMode.Update;
         }
@@ -65,6 +82,7 @@ namespace InventoryDB_Business
 
         public static clsUser FindByUserID(int UserID)
         {
+
             int AccountID = -1, RoleID = -1;
             string UserName = "", PasswordHash = "";
             bool IsActive = false;
@@ -137,7 +155,7 @@ namespace InventoryDB_Business
             return false;
         }
 
-        public static DataTable GetAllUsers(int AccountID)
+        public static List<clsUserData.UserDTO> GetAllUsers(int AccountID)
         {
             return clsUserData.GetAllUsers(AccountID);
         }

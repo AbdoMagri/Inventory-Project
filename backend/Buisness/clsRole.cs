@@ -46,6 +46,15 @@ namespace InventoryDB_Business
             else
                 return null;
         }
+        public static clsRole FindByName(string Name)
+        {
+            int RoleID = -1;
+
+            if (clsRoleData.GetRoleInfoByName(Name, ref RoleID))
+                return new clsRole(RoleID, Name);
+            else
+                return null;
+        }
 
         public bool Save()
         {

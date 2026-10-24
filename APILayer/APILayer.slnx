@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../backend/Buisness/InventoryDB_Business.csproj" />
+  <Project Path="../backend/DataAccess/InventoryDB_DataAccess.csproj" />
+  <Project Path="InventoryAPI.csproj" />
+</Solution>
