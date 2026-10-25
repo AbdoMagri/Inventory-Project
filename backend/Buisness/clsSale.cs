@@ -10,6 +10,16 @@ namespace InventoryDB_Business
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
+        public clsSaleData.SaleDTO DTO
+        {
+            get
+            {
+                return new clsSaleData.SaleDTO(this.SaleID, this.AccountID,
+                    this.CustomerID,
+                    this.UserID, 
+                    this.SaleDate, this.Total, this.GetItems());
+            }
+        }
         public int SaleID { set; get; }
         public int AccountID { set; get; }
         public int? CustomerID { set; get; }      // null = walk-in customer
@@ -101,7 +111,7 @@ namespace InventoryDB_Business
                 return null;
         }
 
-        public DataTable GetItems()
+        public List<Dictionary<string, object?>> GetItems()
         {
             return clsSaleItem.GetItemsBySaleID(this.SaleID);
         }

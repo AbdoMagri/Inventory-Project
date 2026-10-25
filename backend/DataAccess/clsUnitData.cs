@@ -6,6 +6,12 @@ namespace InventoryDB_DataAccess
 {
     public class clsUnitData
     {
+        public class UnitDTO
+        {
+            public UnitDTO(int unitID, string name) { UnitID = unitID; Name = name; }
+            public int UnitID { get; set; }
+            public string Name { get; set; }
+        }
         public static bool GetUnitInfoByID(int UnitID, ref string Name)
         {
             bool isFound = false;

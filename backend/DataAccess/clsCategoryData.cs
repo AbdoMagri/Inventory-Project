@@ -6,6 +6,16 @@ namespace InventoryDB_DataAccess
 {
     public class clsCategoryData
     {
+        public class CategoryDTO
+        {
+            public CategoryDTO(int categoryID, int accountID, string name)
+            {
+                CategoryID = categoryID; AccountID = accountID; Name = name;
+            }
+            public int CategoryID { get; set; }
+            public int AccountID { get; set; }
+            public string Name { get; set; }
+        }
         public static bool GetCategoryInfoByID(int CategoryID, ref int AccountID, ref string Name)
         {
             bool isFound = false;

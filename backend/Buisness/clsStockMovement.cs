@@ -10,6 +10,18 @@ namespace InventoryDB_Business
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
+
+        public clsStockMovementData.StockMovementDTO DTO
+        {
+            get
+            {
+                return new clsStockMovementData.StockMovementDTO(this.MovementID,
+                    this.ProductID,
+                    this.UserID, 
+                    this.MovementType.ToString(), this.Qty,
+                    this.ReferenceID, this.Note, this.MovementDate);
+            }
+        }
         public enum enMovementType { Purchase = 0, Sale = 1, Return = 2, Adjustment = 3 };
 
         public int MovementID { set; get; }

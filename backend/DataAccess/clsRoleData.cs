@@ -6,6 +6,12 @@ namespace InventoryDB_DataAccess
 {
     public class clsRoleData
     {
+        public class RoleDTO
+        {
+            public RoleDTO(int roleID, string name) { RoleID = roleID; Name = name; }
+            public int RoleID { get; set; }
+            public string Name { get; set; }
+        }
         public static bool GetRoleInfoByID(int RoleID, ref string Name)
         {
             bool isFound = false;

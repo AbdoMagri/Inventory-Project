@@ -9,6 +9,10 @@ namespace InventoryDB_Business
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
+        public clsUnitData.UnitDTO DTO
+        {
+            get { return new clsUnitData.UnitDTO(this.UnitID, this.Name); }
+        }
         public int UnitID { set; get; }
         public string Name { set; get; }
 
@@ -18,7 +22,12 @@ namespace InventoryDB_Business
             this.Name = "";
             Mode = enMode.AddNew;
         }
-
+        public clsUnit(clsUnitData.UnitDTO DTO)
+        {
+            this.UnitID = DTO.UnitID;
+            this.Name = DTO.Name;
+            Mode = enMode.Update;
+        }
         private clsUnit(int UnitID, string Name)
         {
             this.UnitID = UnitID;

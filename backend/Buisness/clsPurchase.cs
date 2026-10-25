@@ -9,6 +9,16 @@ namespace InventoryDB_Business
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
+        public clsPurchaseData.PurchaseDTO DTO
+        {
+            get
+            {
+                return new clsPurchaseData.PurchaseDTO(this.PurchaseID, this.AccountID,
+                    this.SupplierID,
+                    this.UserID,
+                    this.PurchaseDate, this.Total, this.GetItems());
+            }
+        }
         public int PurchaseID { set; get; }
         public int AccountID { set; get; }
         public int SupplierID { set; get; }
@@ -85,7 +95,7 @@ namespace InventoryDB_Business
         //    return false;
         //}
 
-        public DataTable GetItems()
+        public List<Dictionary<string, object?>> GetItems()
         {
             return clsPurchaseItem.GetItemsByPurchaseID(this.PurchaseID);
         }

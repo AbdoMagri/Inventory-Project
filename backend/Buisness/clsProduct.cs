@@ -9,6 +9,17 @@ namespace InventoryDB_Business
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
+        public clsProductData.ProductDTO DTO
+        {
+            get
+            {
+                return new clsProductData.ProductDTO(this.ProductID, this.AccountID,
+                    this.CategoryID,
+                    this.UnitID,
+                    this.Name, this.SKU, this.CostPrice, this.SellPrice,
+                    this.MinStock, this.Quantity, this.IsActive, this.ImagePath);
+            }
+        }
         public int ProductID { set; get; }
         public int AccountID { set; get; }
         public int? CategoryID { set; get; }
@@ -38,6 +49,24 @@ namespace InventoryDB_Business
             Mode = enMode.AddNew;
         }
 
+        public clsProduct(clsProductData.ProductDTO DTO)
+        {
+            this.ProductID = DTO.ProductID;
+            this.AccountID = DTO.AccountID;
+            this.CategoryID = DTO.CategoryID;
+            this.CategoryInfo = DTO.CategoryID.HasValue ? clsCategory.Find(DTO.CategoryID.Value) : null;
+            this.UnitID = DTO.UnitID;
+            this.UnitInfo = clsUnit.Find(DTO.UnitID);
+            this.Name = DTO.Name;
+            this.SKU = DTO.SKU;
+            this.CostPrice = DTO.CostPrice;
+            this.SellPrice = DTO.SellPrice;
+            this.MinStock = DTO.MinStock;
+            this.Quantity = DTO.Quantity;
+            this.IsActive = DTO.IsActive;
+            this.ImagePath = DTO.ImagePath;
+            Mode = enMode.Update;
+        }
         private clsProduct(int ProductID, int AccountID, int? CategoryID, int UnitID, string Name,
             string SKU, decimal CostPrice, decimal SellPrice, int MinStock, int Quantity, bool IsActive, string ImagePath)
         {

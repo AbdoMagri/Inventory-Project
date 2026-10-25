@@ -6,6 +6,29 @@ namespace InventoryDB_DataAccess
 {
     public class clsProductData
     {
+        public class ProductDTO
+        {
+            public ProductDTO(int productID, int accountID, int? categoryID, int unitID, string name,
+                string sku, decimal costPrice, decimal sellPrice, int minStock, int quantity,
+                bool isActive, string imagePath)
+            {
+                ProductID = productID; AccountID = accountID; CategoryID = categoryID; UnitID = unitID;
+                Name = name; SKU = sku; CostPrice = costPrice; SellPrice = sellPrice;
+                MinStock = minStock; Quantity = quantity; IsActive = isActive; ImagePath = imagePath;
+            }
+            public int ProductID { get; set; }
+            public int AccountID { get; set; }
+            public int? CategoryID { get; set; }
+            public int UnitID { get; set; }
+            public string Name { get; set; }
+            public string SKU { get; set; }
+            public decimal CostPrice { get; set; }
+            public decimal SellPrice { get; set; }
+            public int MinStock { get; set; }
+            public int Quantity { get; set; }
+            public bool IsActive { get; set; }
+            public string ImagePath { get; set; }
+        }
         public static bool GetProductInfoByID(int ProductID, ref int AccountID, ref int? CategoryID,
             ref int UnitID, ref string Name, ref string SKU, ref decimal CostPrice,
             ref decimal SellPrice, ref int MinStock, ref int Quantity, ref bool IsActive, ref string ImagePath)

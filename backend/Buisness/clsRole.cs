@@ -9,6 +9,10 @@ namespace InventoryDB_Business
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
+        public clsRoleData.RoleDTO DTO
+        {
+            get { return new clsRoleData.RoleDTO(this.RoleID, this.Name); }
+        }
         public int RoleID { set; get; }
         public string Name { set; get; }
 
@@ -19,6 +23,12 @@ namespace InventoryDB_Business
             Mode = enMode.AddNew;
         }
 
+        public clsRole(clsRoleData.RoleDTO DTO)
+        {
+            this.RoleID = DTO.RoleID;
+            this.Name = DTO.Name;
+            Mode = enMode.Update;
+        }
         private clsRole(int RoleID, string Name)
         {
             this.RoleID = RoleID;

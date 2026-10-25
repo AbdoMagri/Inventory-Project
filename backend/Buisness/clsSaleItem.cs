@@ -85,7 +85,7 @@ namespace InventoryDB_Business
         //    return false;
         //}
 
-        public static DataTable GetItemsBySaleID(int SaleID)
+        public static List<Dictionary<string, object?>> GetItemsBySaleID(int SaleID)
         {
             return clsSaleItemData.GetItemsBySaleID(SaleID);
         }

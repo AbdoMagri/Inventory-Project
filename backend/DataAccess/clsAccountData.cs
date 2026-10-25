@@ -6,6 +6,18 @@ namespace InventoryDB_DataAccess
 {
     public class clsAccountData
     {
+
+        public class AccountDTO
+        {
+            public AccountDTO(int accountID, string name, DateTime createdAt, string imagePath)
+            {
+                AccountID = accountID; Name = name; CreatedAt = createdAt; ImagePath = imagePath;
+            }
+            public int AccountID { get; set; }
+            public string Name { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public string ImagePath { get; set; }
+        }
         public static bool GetAccountInfoByID(int AccountID, ref string Name, ref DateTime CreatedAt, ref string ImagePath)
         {
             bool isFound = false;

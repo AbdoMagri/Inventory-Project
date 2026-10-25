@@ -9,6 +9,10 @@ namespace InventoryDB_Business
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
+        public clsCategoryData.CategoryDTO DTO
+        {
+            get { return new clsCategoryData.CategoryDTO(this.CategoryID,this.AccountID, this.Name); }
+        }
         public int CategoryID { set; get; }
         public int AccountID { set; get; }
         public string Name { set; get; }
@@ -20,6 +24,13 @@ namespace InventoryDB_Business
             Mode = enMode.AddNew;
         }
 
+        public clsCategory(clsCategoryData.CategoryDTO DTO)
+        {
+            this.CategoryID = DTO.CategoryID;
+            this.AccountID = DTO.AccountID;
+            this.Name = DTO.Name;
+            Mode = enMode.Update;
+        }
         private clsCategory(int CategoryID, int AccountID, string Name)
         {
             this.CategoryID = CategoryID;

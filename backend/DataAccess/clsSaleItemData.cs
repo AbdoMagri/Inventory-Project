@@ -85,29 +85,45 @@ namespace InventoryDB_DataAccess
         //    return (rowsAffected > 0);
         //}
 
-        public static DataTable GetItemsBySaleID(int SaleID)
+
+        public static List<Dictionary<string, object?>> GetItemsBySaleID(int SaleID)
         {
-            DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+            List<Dictionary<string, object?>> items = new List<Dictionary<string, object?>>();
+
             string query = @"SELECT si.SaleItemID, si.ProductID, ProductName = p.Name, p.SKU,
-                                    si.Qty, si.UnitPrice, LineTotal = si.Qty * si.UnitPrice,
-                                    Profit = si.Qty * (si.UnitPrice - si.UnitCost)
-                             FROM SaleItems si
-                             INNER JOIN Products p ON si.ProductID = p.ProductID
-                             WHERE si.SaleID = @SaleID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@SaleID", SaleID);
-            try
+                            si.Qty, si.UnitPrice, LineTotal = si.Qty * si.UnitPrice,
+                            Profit = si.Qty * (si.UnitPrice - si.UnitCost)
+                     FROM SaleItems si
+                     INNER JOIN Products p ON si.ProductID = p.ProductID
+                     WHERE si.SaleID = @SaleID";
+
+            using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString))
+            using (SqlCommand command = new SqlCommand(query, connection))
             {
+                command.Parameters.AddWithValue("@SaleID", SaleID);
+
                 connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
-                reader.Close();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Dictionary<string, object?> item = new Dictionary<string, object?>();
+
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            item[reader.GetName(i)] =
+                                reader.IsDBNull(i) ? null : reader.GetValue(i);
+                        }
+
+                        items.Add(item);
+                    }
+                }
             }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return dt;
+
+            return items;
         }
+
 
         //public static bool DeleteSaleItem(int SaleItemID)
         //{

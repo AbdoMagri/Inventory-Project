@@ -7,6 +7,23 @@ namespace InventoryDB_DataAccess
     // The stock log is append-only: no Update or Delete on purpose
     public class clsStockMovementData
     {
+        public class StockMovementDTO
+        {
+            public StockMovementDTO(int movementID, int productID, int userID, string movementType,
+                int qty, int? referenceID, string note, DateTime movementDate)
+            {
+                MovementID = movementID; ProductID = productID; UserID = userID; MovementType = movementType;
+                Qty = qty; ReferenceID = referenceID; Note = note; MovementDate = movementDate;
+            }
+            public int MovementID { get; set; }
+            public int ProductID { get; set; }
+            public int UserID { get; set; }
+            public string MovementType { get; set; }
+            public int Qty { get; set; }
+            public int? ReferenceID { get; set; }
+            public string Note { get; set; }
+            public DateTime MovementDate { get; set; }
+        }
         public static bool GetMovementInfoByID(int MovementID, ref int ProductID, ref int UserID,
             ref string MovementType, ref int Qty, ref int? ReferenceID, ref string Note, ref DateTime MovementDate)
         {

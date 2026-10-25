@@ -6,6 +6,17 @@ namespace InventoryDB_DataAccess
 {
     public class clsSupplierData
     {
+        public class SupplierDTO
+        {
+            public SupplierDTO(int supplierID, int accountID, string name, string phone)
+            {
+                SupplierID = supplierID; AccountID = accountID; Name = name; Phone = phone;
+            }
+            public int SupplierID { get; set; }
+            public int AccountID { get; set; }
+            public string Name { get; set; }
+            public string Phone { get; set; }
+        }
         public static bool GetSupplierInfoByID(int SupplierID, ref int AccountID, ref string Name, ref string Phone)
         {
             bool isFound = false;

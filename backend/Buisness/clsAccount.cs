@@ -9,6 +9,10 @@ namespace InventoryDB_Business
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
+        public clsAccountData.AccountDTO DTO
+        {
+            get { return new clsAccountData.AccountDTO(this.AccountID, this.Name, this.CreatedAt, this.ImagePath); }
+        }
         public int AccountID { set; get; }
         public string Name { set; get; }
         public DateTime CreatedAt { set; get; }
@@ -21,6 +25,15 @@ namespace InventoryDB_Business
             this.CreatedAt = DateTime.Now;
             Mode = enMode.AddNew;
             this.ImagePath = "";
+        }
+
+        public clsAccount(clsAccountData.AccountDTO DTO)
+        {
+            this.AccountID = DTO.AccountID;
+            this.Name = DTO.Name;
+            this.CreatedAt = DTO.CreatedAt;
+            Mode = enMode.Update;
+            this.ImagePath = DTO.ImagePath;
         }
 
         private clsAccount(int AccountID, string Name, DateTime CreatedAt, string ImagePath)

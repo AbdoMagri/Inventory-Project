@@ -9,6 +9,10 @@ namespace InventoryDB_Business
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
+        public clsSupplierData.SupplierDTO DTO
+        {
+            get { return new clsSupplierData.SupplierDTO(this.SupplierID, this.AccountID, this.Name, this.Phone); }
+        }
         public int SupplierID { set; get; }
         public int AccountID { set; get; }
         public string Name { set; get; }
@@ -21,7 +25,14 @@ namespace InventoryDB_Business
             this.Phone = "";
             Mode = enMode.AddNew;
         }
-
+        public clsSupplier(clsSupplierData.SupplierDTO DTO)
+        {
+            this.SupplierID = DTO.SupplierID;
+            this.AccountID = DTO.AccountID;
+            this.Name = DTO.Name;
+            this.Phone = DTO.Phone;
+            Mode = enMode.Update;
+        }
         private clsSupplier(int SupplierID, int AccountID, string Name, string Phone)
         {
             this.SupplierID = SupplierID;

@@ -6,6 +6,22 @@ namespace InventoryDB_DataAccess
 {
     public class clsPurchaseData
     {
+        public class PurchaseDTO
+        {
+            public PurchaseDTO(int purchaseID, int accountID, int supplierID, int userID, DateTime purchaseDate,
+                decimal total, List<Dictionary<string, object?>> items)
+            {
+                PurchaseID = purchaseID; AccountID = accountID; SupplierID = supplierID; UserID = userID;
+                PurchaseDate = purchaseDate; Total = total; Items = items;
+            }
+            public int PurchaseID { get; set; }
+            public int AccountID { get; set; }
+            public int SupplierID { get; set; }
+            public int UserID { get; set; }
+            public DateTime PurchaseDate { get; set; }
+            public decimal Total { get; set; }
+            public List<Dictionary<string, object?>> Items { get; set; }
+        }
         public static bool GetPurchaseInfoByID(int PurchaseID, ref int AccountID, ref int SupplierID,
             ref int UserID, ref DateTime PurchaseDate, ref decimal Total)
         {

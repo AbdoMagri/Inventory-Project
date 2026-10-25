@@ -60,5 +60,93 @@ namespace InventoryAPI.Controllers
             return CreatedAtRoute("GetUserById", new {id = newUserDTO.Id}, newUserDTO);
         }
 
+
+        [HttpPut("{id}",Name ="UpdateUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<clsUserData.UserDTO> UpdateUser(int id, clsUserData.UserDTO updatedUser)
+        {
+            if (id < 1 || updatedUser == null || string.IsNullOrEmpty(updatedUser.UserName))
+            {
+                return BadRequest("Invalid User Data.");
+            }
+            clsUser User = clsUser.FindByUserID(id);
+
+            if (User == null) {
+                return NotFound($"User Not Found");
+            }
+            User.UserName = updatedUser.UserName;
+            User.RoleInfo = clsRole.FindByName(updatedUser.RoleName);
+            User.RoleID = User.RoleInfo.RoleID;
+            User.IsActive = updatedUser.IsActive;
+            User.Save();
+
+            return Ok(User.UDTO);
+        }
+
+
+        [HttpPatch("{id:int}", Name = "ChangePassword")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult ChangeUserPassword(
+            int id, [FromBody] string NewPassword)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("Invalid user ID.");
+            }
+
+            if (string.IsNullOrWhiteSpace(NewPassword))
+            {
+                return BadRequest("Password cannot be empty.");
+            }
+
+            NewPassword = NewPassword.Trim();
+
+            if (NewPassword.Length < 8)
+            {
+                return BadRequest("Password must be at least 8 characters long.");
+            }
+
+            if (NewPassword.Length > 20)
+            {
+                return BadRequest("Password cannot exceed 20 characters.");
+            }
+
+            clsUser user = clsUser.FindByUserID(id);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            if (!user.ChangePassword(NewPassword))
+            {
+                return BadRequest("Failed to change the password.");
+            }
+
+            return Ok("Password changed successfully.");
+        }
+
+
+        [HttpDelete("{id:int}", Name = "DeleteUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public ActionResult DeleteUser(int id)
+        {
+            if (id < 0) {
+                return BadRequest("Invalid User Data");
+            }
+
+            if (clsUser.DeleteUser(id))
+                return Ok($"User has been deleted");
+            else
+                return NotFound("User Not found");
+            
+        }
     }
 }

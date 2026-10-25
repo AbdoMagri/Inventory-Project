@@ -80,7 +80,7 @@ namespace InventoryDB_Business
         //    return false;
         //}
 
-        public static DataTable GetItemsByPurchaseID(int PurchaseID)
+        public static List<Dictionary<string, object?>> GetItemsByPurchaseID(int PurchaseID)
         {
             return clsPurchaseItemData.GetItemsByPurchaseID(PurchaseID);
         }

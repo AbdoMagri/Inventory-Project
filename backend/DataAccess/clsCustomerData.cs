@@ -6,6 +6,17 @@ namespace InventoryDB_DataAccess
 {
     public class clsCustomerData
     {
+        public class CustomerDTO
+        {
+            public CustomerDTO(int customerID, int accountID, string name, string phone)
+            {
+                CustomerID = customerID; AccountID = accountID; Name = name; Phone = phone;
+            }
+            public int CustomerID { get; set; }
+            public int AccountID { get; set; }
+            public string Name { get; set; }
+            public string Phone { get; set; }
+        }
         public static bool GetCustomerInfoByID(int CustomerID, ref int AccountID, ref string Name, ref string Phone)
         {
             bool isFound = false;

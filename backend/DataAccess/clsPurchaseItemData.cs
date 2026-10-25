@@ -81,27 +81,40 @@ namespace InventoryDB_DataAccess
         //    return (rowsAffected > 0);
         //}
 
-        public static DataTable GetItemsByPurchaseID(int PurchaseID)
+        public static List<Dictionary<string, object?>> GetItemsByPurchaseID(int PurchaseID)
         {
-            DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+            List<Dictionary<string, object?>> items = new List<Dictionary<string, object?>>();
+            
             string query = @"SELECT pi.PurchaseItemID, pi.ProductID, ProductName = p.Name, p.SKU,
                                     pi.Qty, pi.UnitCost, LineTotal = pi.Qty * pi.UnitCost
                              FROM PurchaseItems pi
                              INNER JOIN Products p ON pi.ProductID = p.ProductID
                              WHERE pi.PurchaseID = @PurchaseID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@PurchaseID", PurchaseID);
-            try
+            using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString))
+            using (SqlCommand command = new SqlCommand(query, connection))
             {
+                command.Parameters.AddWithValue("@PurchaseID", PurchaseID);
+
                 connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
-                reader.Close();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Dictionary<string, object?> item = new Dictionary<string, object?>();
+
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            item[reader.GetName(i)] =
+                                reader.IsDBNull(i) ? null : reader.GetValue(i);
+                        }
+
+                        items.Add(item);
+                    }
+                }
             }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return dt;
+
+            return items;
         }
 
         //public static bool DeletePurchaseItem(int PurchaseItemID)
