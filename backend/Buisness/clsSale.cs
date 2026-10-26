@@ -1,7 +1,8 @@
-﻿using System;
-using System.Data;
-using InventoryDB_DataAccess;
+﻿using InventoryDB_DataAccess;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using static InventoryDB_DataAccess.clsSaleData;
 
 namespace InventoryDB_Business
 {
@@ -116,7 +117,7 @@ namespace InventoryDB_Business
             return clsSaleItem.GetItemsBySaleID(this.SaleID);
         }
 
-        public static DataTable GetAllSales(int AccountID)
+        public static List<SaleDTO> GetAllSales(int AccountID)
         {
             return clsSaleData.GetAllSales(AccountID);
         }

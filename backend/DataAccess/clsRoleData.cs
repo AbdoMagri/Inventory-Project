@@ -30,7 +30,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -52,7 +52,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -72,7 +72,7 @@ namespace InventoryDB_DataAccess
                 if (result != null && int.TryParse(result.ToString(), out int insertedID))
                     RoleID = insertedID;
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw;}
             finally { connection.Close(); }
             return RoleID;
         }
@@ -90,27 +90,48 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { return false; }
+            catch (Exception){ return false; }
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
 
-        public static DataTable GetAllRoles()
+        public static List<RoleDTO> GetAllRoles()
         {
-            DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "SELECT * FROM Roles";
+            List<RoleDTO> roles = new List<RoleDTO>();
+
+            SqlConnection connection = new SqlConnection(
+                clsDataAccessSettings.ConnectionString);
+
+            string query = "SELECT RoleID, Name FROM Roles";
+
             SqlCommand command = new SqlCommand(query, connection);
+
             try
             {
                 connection.Open();
+
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+
+                while (reader.Read())
+                {
+                    roles.Add(new RoleDTO(
+                        (int)reader["RoleID"],
+                        reader["Name"].ToString()
+                    ));
+                }
+
                 reader.Close();
             }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return dt;
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+            return roles;
         }
 
         public static bool DeleteRole(int RoleID)
@@ -125,7 +146,7 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { }
+            catch (Exception) { throw; }
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
@@ -144,7 +165,7 @@ namespace InventoryDB_DataAccess
                 isFound = reader.HasRows;
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }

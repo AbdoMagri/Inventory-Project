@@ -100,7 +100,7 @@ namespace InventoryDB_Business
             return clsPurchaseItem.GetItemsByPurchaseID(this.PurchaseID);
         }
 
-        public static DataTable GetAllPurchases(int AccountID)
+        public static List<clsPurchaseData.PurchaseListDTO> GetAllPurchases(int AccountID)
         {
             return clsPurchaseData.GetAllPurchases(AccountID);
         }

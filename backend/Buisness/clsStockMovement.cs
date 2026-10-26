@@ -102,12 +102,12 @@ namespace InventoryDB_Business
         //    return false;
         //}
 
-        public static DataTable GetMovementsByProductID(int ProductID)
+        public static List<clsStockMovementData.StockMovementDTO> GetMovementsByProductID(int ProductID)
         {
             return clsStockMovementData.GetMovementsByProductID(ProductID);
         }
 
-        public static DataTable GetAllMovements(int AccountID)
+        public static List<clsStockMovementData.clsStockMovement> GetAllMovements(int AccountID)
         {
             return clsStockMovementData.GetAllMovements(AccountID);
         }

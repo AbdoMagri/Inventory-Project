@@ -80,7 +80,7 @@ namespace InventoryDB_Business
             return false;
         }
 
-        public static DataTable GetAllCategories(int AccountID)
+        public static List<clsCategoryData.CategoryDTO> GetAllCategories(int AccountID)
         {
             return clsCategoryData.GetAllCategories(AccountID);
         }

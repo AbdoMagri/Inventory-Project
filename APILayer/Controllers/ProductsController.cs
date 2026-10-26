@@ -23,17 +23,18 @@ namespace InventoryAPI.Controllers
             return Ok(clsProduct.GetLowStockProducts(AccountID));
         }
 
-        [HttpGet("{id:int}", Name = "GetProductByID")]
+        [HttpGet("{CurrentAccountID:int},{id:int}", Name = "GetProductByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<clsProductData.ProductDTO> GetProductById(int id)
+        public ActionResult<clsProductData.ProductDTO> GetProductById(int id, int CurrentAccountID)
         {
             if (id < 1)
                 return BadRequest($"Not accepted ID {id}");
 
             clsProduct Product = clsProduct.Find(id);
-            if (Product == null)
+
+            if (Product == null || Product.AccountID != CurrentAccountID)
                 return NotFound($"Product with ID {id} not found.");
 
             return Ok(Product.DTO);

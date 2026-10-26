@@ -16,9 +16,12 @@ namespace InventoryDB_DataAccess
                 Name = name; SKU = sku; CostPrice = costPrice; SellPrice = sellPrice;
                 MinStock = minStock; Quantity = quantity; IsActive = isActive; ImagePath = imagePath;
             }
+           
             public int ProductID { get; set; }
             public int AccountID { get; set; }
             public int? CategoryID { get; set; }
+            public string CategoryName { get; set; }
+            public string UnitName { get; set; }
             public int UnitID { get; set; }
             public string Name { get; set; }
             public string SKU { get; set; }
@@ -28,6 +31,64 @@ namespace InventoryDB_DataAccess
             public int Quantity { get; set; }
             public bool IsActive { get; set; }
             public string ImagePath { get; set; }
+        }
+        public class ProductListDTO
+        {
+            public int ProductID { get; set; }
+            public string Name { get; set; }
+            public string SKU { get; set; }
+            public string CategoryName { get; set; }
+            public string UnitName { get; set; }
+            public decimal CostPrice { get; set; }
+            public decimal SellPrice { get; set; }
+            public int MinStock { get; set; }
+            public int Quantity { get; set; }
+            public bool IsActive { get; set; }
+            public string ImagePath { get; set; }
+
+            public ProductListDTO(
+                int productID,
+                string name,
+                string sku,
+                string categoryName,
+                string unitName,
+                decimal costPrice,
+                decimal sellPrice,
+                int minStock,
+                int quantity,
+                bool isActive,
+                string imagePath)
+            {
+                ProductID = productID;
+                Name = name;
+                SKU = sku;
+                CategoryName = categoryName;
+                UnitName = unitName;
+                CostPrice = costPrice;
+                SellPrice = sellPrice;
+                MinStock = minStock;
+                Quantity = quantity;
+                IsActive = isActive;
+                ImagePath = imagePath;
+            }
+        }
+        public class LowStockProductDTO
+        {
+            public int ProductID { get; set; }
+            public string Name { get; set; }
+            public string SKU { get; set; }
+            public int MinStock { get; set; }
+            public int Quantity { get; set; }
+
+            public LowStockProductDTO(int productID, string name, string sku,
+                int minStock, int quantity)
+            {
+                ProductID = productID;
+                Name = name;
+                SKU = sku;
+                MinStock = minStock;
+                Quantity = quantity;
+            }
         }
         public static bool GetProductInfoByID(int ProductID, ref int AccountID, ref int? CategoryID,
             ref int UnitID, ref string Name, ref string SKU, ref decimal CostPrice,
@@ -59,7 +120,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -95,7 +156,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; throw; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -128,7 +189,7 @@ namespace InventoryDB_DataAccess
                 if (result != null && int.TryParse(result.ToString(), out int insertedID))
                     ProductID = insertedID;
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw;}
             finally { connection.Close(); }
             return ProductID;
         }
@@ -151,7 +212,10 @@ namespace InventoryDB_DataAccess
                              WHERE ProductID = @ProductID";
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@ProductID", ProductID);
-            command.Parameters.AddWithValue("@CategoryID", (object)CategoryID ?? DBNull.Value);
+            command.Parameters.AddWithValue(
+    "@CategoryID",
+    CategoryID.HasValue ? (object)CategoryID.Value : DBNull.Value
+);
             command.Parameters.AddWithValue("@UnitID", UnitID);
             command.Parameters.AddWithValue("@Name", Name);
             command.Parameters.AddWithValue("@SKU", SKU);
@@ -166,7 +230,7 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { return false; }
+            catch (Exception){ return false; }
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
@@ -185,56 +249,119 @@ namespace InventoryDB_DataAccess
         //        connection.Open();
         //        rowsAffected = command.ExecuteNonQuery();
         //    }
-        //    catch (Exception ex) { return false; }   // CK_Products_Stock fails here if stock would go below 0
+        //    catch (Exception){ return false; }   // CK_Products_Stock fails here if stock would go below 0
         //    finally { connection.Close(); }
         //    return (rowsAffected > 0);
         //}
 
-        public static DataTable GetAllProducts(int AccountID)
+        public static List<ProductListDTO> GetAllProducts(int AccountID)
         {
-            DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"SELECT p.ProductID, p.Name, p.SKU, CategoryName = c.Name, UnitName = u.Name,
-                                    p.CostPrice, p.SellPrice, p.MinStock, p.Quantity, p.IsActive, p.ImagePath
-                             FROM Products p
-                             LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
-                             INNER JOIN Units u ON p.UnitID = u.UnitID
-                             WHERE p.AccountID = @AccountID";
+            List<ProductListDTO> products = new List<ProductListDTO>();
+
+            SqlConnection connection = new SqlConnection(
+                clsDataAccessSettings.ConnectionString);
+
+            string query = @"SELECT p.ProductID, p.Name, p.SKU,
+                            CategoryName = c.Name,
+                            UnitName = u.Name,
+                            p.CostPrice, p.SellPrice, p.MinStock,
+                            p.Quantity, p.IsActive, p.ImagePath
+                     FROM Products p
+                     LEFT JOIN Categories c
+                        ON p.CategoryID = c.CategoryID
+                     INNER JOIN Units u
+                        ON p.UnitID = u.UnitID
+                     WHERE p.AccountID = @AccountID";
+
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountID", AccountID);
+
             try
             {
                 connection.Open();
+
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+
+                while (reader.Read())
+                {
+                    products.Add(new ProductListDTO(
+                        (int)reader["ProductID"],
+                        reader["Name"].ToString(),
+                        reader["SKU"].ToString(),
+                        reader["CategoryName"] == DBNull.Value
+                            ? null
+                            : reader["CategoryName"].ToString(),
+                        reader["UnitName"].ToString(),
+                        (decimal)reader["CostPrice"],
+                        (decimal)reader["SellPrice"],
+                        (int)reader["MinStock"],
+                        (int)reader["Quantity"],
+                        (bool)reader["IsActive"],
+                        reader["ImagePath"] == DBNull.Value
+                            ? null
+                            : reader["ImagePath"].ToString()
+                    ));
+                }
+
                 reader.Close();
             }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return dt;
-        }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
 
-        public static DataTable GetLowStockProducts(int AccountID)
+            return products;
+        }
+        public static List<LowStockProductDTO> GetLowStockProducts(int AccountID)
         {
-            DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+            List<LowStockProductDTO> products = new List<LowStockProductDTO>();
+
+            SqlConnection connection = new SqlConnection(
+                clsDataAccessSettings.ConnectionString);
+
             string query = @"SELECT ProductID, Name, SKU, MinStock, Quantity
-                             FROM Products
-                             WHERE AccountID = @AccountID AND IsActive = 1 AND Quantity <= MinStock";
+                     FROM Products
+                     WHERE AccountID = @AccountID
+                       AND IsActive = 1
+                       AND Quantity <= MinStock";
+
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountID", AccountID);
+
             try
             {
                 connection.Open();
+
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+
+                while (reader.Read())
+                {
+                    products.Add(new LowStockProductDTO(
+                        (int)reader["ProductID"],
+                        reader["Name"].ToString(),
+                        reader["SKU"].ToString(),
+                        (int)reader["MinStock"],
+                        (int)reader["Quantity"]
+                    ));
+                }
+
                 reader.Close();
             }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return dt;
-        }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
 
+            return products;
+        }
         public static bool DeleteProduct(int ProductID)
         {
             int rowsAffected = 0;
@@ -247,7 +374,7 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { }   // fails if the product already has sales/purchases: use IsActive = 0 instead
+            catch (Exception){ throw;}   // fails if the product already has sales/purchases: use IsActive = 0 instead
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
@@ -266,7 +393,7 @@ namespace InventoryDB_DataAccess
                 isFound = reader.HasRows;
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -286,7 +413,7 @@ namespace InventoryDB_DataAccess
                 isFound = reader.HasRows;
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }

@@ -16,17 +16,17 @@ namespace InventoryAPI.Controllers
             return Ok(clsSupplier.GetAllSuppliers(AccountID));
         }
 
-        [HttpGet("{id:int}", Name = "GetSupplierByID")]
+        [HttpGet("{id:int}/{AccountID}", Name = "GetSupplierByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<clsSupplierData.SupplierDTO> GetSupplierById(int id)
+        public ActionResult<clsSupplierData.SupplierDTO> GetSupplierById(int id, int AccountID)
         {
             if (id < 1)
                 return BadRequest($"Not accepted ID {id}");
 
             clsSupplier Supplier = clsSupplier.Find(id);
-            if (Supplier == null)
+            if (Supplier == null || Supplier.AccountID != AccountID)
                 return NotFound($"Supplier with ID {id} not found.");
 
             return Ok(Supplier.DTO);

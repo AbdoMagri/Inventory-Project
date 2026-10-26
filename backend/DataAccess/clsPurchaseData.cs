@@ -14,6 +14,7 @@ namespace InventoryDB_DataAccess
                 PurchaseID = purchaseID; AccountID = accountID; SupplierID = supplierID; UserID = userID;
                 PurchaseDate = purchaseDate; Total = total; Items = items;
             }
+            
             public int PurchaseID { get; set; }
             public int AccountID { get; set; }
             public int SupplierID { get; set; }
@@ -21,6 +22,26 @@ namespace InventoryDB_DataAccess
             public DateTime PurchaseDate { get; set; }
             public decimal Total { get; set; }
             public List<Dictionary<string, object?>> Items { get; set; }
+            public string SupplierName { get; set; }
+            public string UserName { get; set; }
+        }
+        public class PurchaseListDTO
+        {
+            public int PurchaseID { get; set; }
+            public string SupplierName { get; set; }
+            public string UserName { get; set; }
+            public DateTime PurchaseDate { get; set; }
+            public decimal Total { get; set; }
+
+            public PurchaseListDTO(int purchaseID, string supplierName,
+                string userName, DateTime purchaseDate, decimal total)
+            {
+                PurchaseID = purchaseID;
+                SupplierName = supplierName;
+                UserName = userName;
+                PurchaseDate = purchaseDate;
+                Total = total;
+            }
         }
         public static bool GetPurchaseInfoByID(int PurchaseID, ref int AccountID, ref int SupplierID,
             ref int UserID, ref DateTime PurchaseDate, ref decimal Total)
@@ -45,7 +66,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -71,7 +92,7 @@ namespace InventoryDB_DataAccess
         //        if (result != null && int.TryParse(result.ToString(), out int insertedID))
         //            PurchaseID = insertedID;
         //    }
-        //    catch (Exception ex) { }
+        //    catch (Exception){ throw;}
         //    finally { connection.Close(); }
         //    return PurchaseID;
         //}
@@ -95,34 +116,62 @@ namespace InventoryDB_DataAccess
         //        connection.Open();
         //        rowsAffected = command.ExecuteNonQuery();
         //    }
-        //    catch (Exception ex) { return false; }
+        //    catch (Exception){ return false; }
         //    finally { connection.Close(); }
         //    return (rowsAffected > 0);
         //}
 
-        public static DataTable GetAllPurchases(int AccountID)
+        public static List<PurchaseListDTO> GetAllPurchases(int AccountID)
         {
-            DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"SELECT p.PurchaseID, SupplierName = s.Name, UserName = u.UserName,
-                                    p.PurchaseDate, p.Total
-                             FROM Purchases p
-                             INNER JOIN Suppliers s ON p.SupplierID = s.SupplierID
-                             INNER JOIN Users u ON p.UserID = u.UserID
-                             WHERE p.AccountID = @AccountID
-                             ORDER BY p.PurchaseDate DESC";
+            List<PurchaseListDTO> purchases = new List<PurchaseListDTO>();
+
+            SqlConnection connection = new SqlConnection(
+                clsDataAccessSettings.ConnectionString);
+
+            string query = @"SELECT p.PurchaseID,
+                            SupplierName = s.Name,
+                            UserName = u.UserName,
+                            p.PurchaseDate, p.Total
+                     FROM Purchases p
+                     INNER JOIN Suppliers s
+                        ON p.SupplierID = s.SupplierID
+                     INNER JOIN Users u
+                        ON p.UserID = u.UserID
+                     WHERE p.AccountID = @AccountID
+                     ORDER BY p.PurchaseDate DESC";
+
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountID", AccountID);
+
             try
             {
                 connection.Open();
+
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+
+                while (reader.Read())
+                {
+                    purchases.Add(new PurchaseListDTO(
+                        (int)reader["PurchaseID"],
+                        reader["SupplierName"].ToString(),
+                        reader["UserName"].ToString(),
+                        (DateTime)reader["PurchaseDate"],
+                        (decimal)reader["Total"]
+                    ));
+                }
+
                 reader.Close();
             }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return dt;
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+            return purchases;
         }
 
         //public static bool DeletePurchase(int PurchaseID)
@@ -137,7 +186,7 @@ namespace InventoryDB_DataAccess
         //        connection.Open();
         //        rowsAffected = command.ExecuteNonQuery();
         //    }
-        //    catch (Exception ex) { }
+        //    catch (Exception){ throw;}
         //    finally { connection.Close(); }
         //    return (rowsAffected > 0);
         //}
@@ -156,7 +205,7 @@ namespace InventoryDB_DataAccess
                 isFound = reader.HasRows;
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }

@@ -28,7 +28,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -52,7 +52,7 @@ namespace InventoryDB_DataAccess
         //        if (result != null && int.TryParse(result.ToString(), out int insertedID))
         //            PurchaseItemID = insertedID;
         //    }
-        //    catch (Exception ex) { }
+        //    catch (Exception){ throw;}
         //    finally { connection.Close(); }
         //    return PurchaseItemID;
         //}
@@ -76,7 +76,7 @@ namespace InventoryDB_DataAccess
         //        connection.Open();
         //        rowsAffected = command.ExecuteNonQuery();
         //    }
-        //    catch (Exception ex) { return false; }
+        //    catch (Exception){ return false; }
         //    finally { connection.Close(); }
         //    return (rowsAffected > 0);
         //}
@@ -129,7 +129,7 @@ namespace InventoryDB_DataAccess
         //        connection.Open();
         //        rowsAffected = command.ExecuteNonQuery();
         //    }
-        //    catch (Exception ex) { }
+        //    catch (Exception){ throw;}
         //    finally { connection.Close(); }
         //    return (rowsAffected > 0);
         //}

@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using System;
 using System.Data;
-using Microsoft.Data.SqlClient;
+using static InventoryDB_DataAccess.clsUserData;
 
 namespace InventoryDB_DataAccess
 {
@@ -30,7 +31,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -50,7 +51,7 @@ namespace InventoryDB_DataAccess
                 if (result != null && int.TryParse(result.ToString(), out int insertedID))
                     UnitID = insertedID;
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw;}
             finally { connection.Close(); }
             return UnitID;
         }
@@ -68,14 +69,14 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { return false; }
+            catch (Exception){ return false; }
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
 
-        public static DataTable GetAllUnits()
+        public static List<UnitDTO> GetAllUnits()
         {
-            DataTable dt = new DataTable();
+            var UnitsList = new List<UnitDTO>();
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
             string query = "SELECT * FROM Units";
             SqlCommand command = new SqlCommand(query, connection);
@@ -83,12 +84,18 @@ namespace InventoryDB_DataAccess
             {
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+                while (reader.Read())
+                {
+                    UnitsList.Add(new UnitDTO(
+                        (int)reader["UnitID"],
+                        (string)reader["Name"]
+                        ));
+                }
                 reader.Close();
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw;}
             finally { connection.Close(); }
-            return dt;
+            return UnitsList;
         }
 
         public static bool DeleteUnit(int UnitID)
@@ -103,7 +110,7 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw;}
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
@@ -122,7 +129,7 @@ namespace InventoryDB_DataAccess
                 isFound = reader.HasRows;
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }

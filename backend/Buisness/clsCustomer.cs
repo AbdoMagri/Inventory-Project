@@ -84,7 +84,7 @@ namespace InventoryDB_Business
             return false;
         }
 
-        public static DataTable GetAllCustomers(int AccountID)
+        public static List<clsCustomerData.CustomerDTO> GetAllCustomers(int AccountID)
         {
             return clsCustomerData.GetAllCustomers(AccountID);
         }

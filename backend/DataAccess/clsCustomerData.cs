@@ -37,7 +37,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -62,7 +62,7 @@ namespace InventoryDB_DataAccess
                 if (result != null && int.TryParse(result.ToString(), out int insertedID))
                     CustomerID = insertedID;
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw;}
             finally { connection.Close(); }
             return CustomerID;
         }
@@ -84,28 +84,55 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { return false; }
+            catch (Exception){ return false; }
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
 
-        public static DataTable GetAllCustomers(int AccountID)
+        public static List<CustomerDTO> GetAllCustomers(int AccountID)
         {
-            DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "SELECT CustomerID, Name, Phone FROM Customers WHERE AccountID = @AccountID";
+            List<CustomerDTO> customers = new List<CustomerDTO>();
+
+            SqlConnection connection = new SqlConnection(
+                clsDataAccessSettings.ConnectionString);
+
+            string query = @"SELECT CustomerID, Name, Phone
+                     FROM Customers
+                     WHERE AccountID = @AccountID";
+
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountID", AccountID);
+
             try
             {
                 connection.Open();
+
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+
+                while (reader.Read())
+                {
+                    customers.Add(new CustomerDTO(
+                        (int)reader["CustomerID"],
+                        AccountID,
+                        reader["Name"].ToString(),
+                        reader["Phone"] == DBNull.Value
+                            ? null
+                            : reader["Phone"].ToString()
+                    ));
+                }
+
                 reader.Close();
             }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return dt;
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+            return customers;
         }
 
         public static bool DeleteCustomer(int CustomerID)
@@ -120,7 +147,7 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw;}
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
@@ -139,7 +166,7 @@ namespace InventoryDB_DataAccess
                 isFound = reader.HasRows;
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }

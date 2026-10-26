@@ -6,49 +6,77 @@ namespace InventoryDB_DataAccess
 {
     public class clsDashboardData
     {
-        private static DataTable _Execute(string ProcName, int AccountID, int? UserID, int? Days, int? Top)
+        private static List<Dictionary<string, object?>> _Execute(
+            string ProcName, int AccountID, int? UserID, int? Days, int? Top)
         {
-            DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            SqlCommand command = new SqlCommand(ProcName, connection);
-            command.CommandType = CommandType.StoredProcedure;
+            List<Dictionary<string, object?>> results =
+                new List<Dictionary<string, object?>>();
 
-            command.Parameters.AddWithValue("@AccountID", AccountID);
-            command.Parameters.AddWithValue("@UserID", (object)UserID ?? DBNull.Value);
-            if (Days.HasValue) command.Parameters.AddWithValue("@Days", Days.Value);
-            if (Top.HasValue) command.Parameters.AddWithValue("@Top", Top.Value);
-
-            try
+            using (SqlConnection connection =
+                new SqlConnection(clsDataAccessSettings.ConnectionString))
+            using (SqlCommand command = new SqlCommand(ProcName, connection))
             {
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue("@AccountID", AccountID);
+                command.Parameters.AddWithValue("@UserID",
+                    (object?)UserID ?? DBNull.Value);
+
+                if (Days.HasValue)
+                    command.Parameters.AddWithValue("@Days", Days.Value);
+
+                if (Top.HasValue)
+                    command.Parameters.AddWithValue("@Top", Top.Value);
+
                 connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
-                reader.Close();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Dictionary<string, object?> row =
+                            new Dictionary<string, object?>();
+
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            row[reader.GetName(i)] =
+                                reader.IsDBNull(i) ? null : reader.GetValue(i);
+                        }
+
+                        results.Add(row);
+                    }
+                }
             }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
 
-            return dt;
+            return results;
         }
 
-        public static DataTable GetSummary(int AccountID, int? UserID)
+        public static List<Dictionary<string, object?>> GetSummary(
+            int AccountID, int? UserID)
         {
-            return _Execute("sp_Dashboard_Summary", AccountID, UserID, null, null);
+            return _Execute(
+                "sp_Dashboard_Summary", AccountID, UserID, null, null);
         }
 
-        public static DataTable GetSalesByDay(int AccountID, int? UserID, int Days)
+        public static List<Dictionary<string, object?>> GetSalesByDay(
+            int AccountID, int? UserID, int Days)
         {
-            return _Execute("sp_Dashboard_SalesByDay", AccountID, UserID, Days, null);
+            return _Execute(
+                "sp_Dashboard_SalesByDay", AccountID, UserID, Days, null);
         }
 
-        public static DataTable GetTopProducts(int AccountID, int? UserID, int Days, int Top)
+        public static List<Dictionary<string, object?>> GetTopProducts(
+            int AccountID, int? UserID, int Days, int Top)
         {
-            return _Execute("sp_Dashboard_TopProducts", AccountID, UserID, Days, Top);
+            return _Execute(
+                "sp_Dashboard_TopProducts", AccountID, UserID, Days, Top);
         }
 
-        public static DataTable GetRecentSales(int AccountID, int? UserID, int Top)
+        public static List<Dictionary<string, object?>> GetRecentSales(
+            int AccountID, int? UserID, int Top)
         {
-            return _Execute("sp_Dashboard_RecentSales", AccountID, UserID, null, Top);
+            return _Execute(
+                "sp_Dashboard_RecentSales", AccountID, UserID, null, Top);
         }
     }
 }

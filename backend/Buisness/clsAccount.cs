@@ -87,7 +87,7 @@ namespace InventoryDB_Business
             return false;
         }
 
-        public static DataTable GetAllAccounts()
+        public static List<clsAccountData.AccountDTO> GetAllAccounts()
         {
             return clsAccountData.GetAllAccounts();
         }

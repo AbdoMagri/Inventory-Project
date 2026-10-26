@@ -38,7 +38,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false;  }
+            catch (Exception){ isFound = false;  }
             finally { connection.Close(); }
             return isFound;
         }
@@ -60,7 +60,7 @@ namespace InventoryDB_DataAccess
                 if (result != null && int.TryParse(result.ToString(), out int insertedID))
                     AccountID = insertedID;
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw; }
             finally { connection.Close(); }
             return AccountID;
         }
@@ -83,29 +83,54 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { return false; }
+            catch (Exception){ return false; }
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
 
-        public static DataTable GetAllAccounts()
+        public static List<AccountDTO> GetAllAccounts()
         {
-            DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "SELECT * FROM Accounts";
+            List<AccountDTO> accounts = new List<AccountDTO>();
+
+            SqlConnection connection = new SqlConnection(
+                clsDataAccessSettings.ConnectionString);
+
+            string query = @"SELECT AccountID, Name, CreatedAt, ImagePath
+                     FROM Accounts";
+
             SqlCommand command = new SqlCommand(query, connection);
+
             try
             {
                 connection.Open();
+
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+
+                while (reader.Read())
+                {
+                    accounts.Add(new AccountDTO(
+                        (int)reader["AccountID"],
+                        reader["Name"].ToString(),
+                        (DateTime)reader["CreatedAt"],
+                        reader["ImagePath"] == DBNull.Value
+                            ? null
+                            : reader["ImagePath"].ToString()
+                    ));
+                }
+
                 reader.Close();
             }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return dt;
-        }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
 
+            return accounts;
+        }
         public static bool DeleteAccount(int AccountID)
         {
             int rowsAffected = 0;
@@ -118,7 +143,7 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw; }
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
@@ -137,7 +162,7 @@ namespace InventoryDB_DataAccess
                 isFound = reader.HasRows;
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }

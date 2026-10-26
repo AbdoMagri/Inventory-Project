@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using System;
 using System.Data;
-using Microsoft.Data.SqlClient;
+using static InventoryDB_DataAccess.clsSupplierData;
+using static InventoryDB_DataAccess.clsUserData;
 
 namespace InventoryDB_DataAccess
 {
@@ -23,6 +25,19 @@ namespace InventoryDB_DataAccess
             public int? ReferenceID { get; set; }
             public string Note { get; set; }
             public DateTime MovementDate { get; set; }
+        }
+
+        public class clsStockMovement
+        {
+            public int MovementID { get; set; }
+            public DateTime MovementDate { get; set; }
+            public string ProductName { get; set; }
+            public string SKU { get; set; }
+            public string MovementType { get; set; }
+            public int Qty { get; set; }
+            public int? ReferenceID { get; set; }
+            public string Note { get; set; }
+            public string UserName { get; set; }
         }
         public static bool GetMovementInfoByID(int MovementID, ref int ProductID, ref int UserID,
             ref string MovementType, ref int Qty, ref int? ReferenceID, ref string Note, ref DateTime MovementDate)
@@ -49,7 +64,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -80,17 +95,17 @@ namespace InventoryDB_DataAccess
         //        if (result != null && int.TryParse(result.ToString(), out int insertedID))
         //            MovementID = insertedID;
         //    }
-        //    catch (Exception ex) { }
+        //    catch (Exception){ throw;}
         //    finally { connection.Close(); }
         //    return MovementID;
         //}
 
-        public static DataTable GetMovementsByProductID(int ProductID)
+        public static List<StockMovementDTO> GetMovementsByProductID(int ProductID)
         {
-            DataTable dt = new DataTable();
+            var StockMovementsList = new List<StockMovementDTO>();
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
             string query = @"SELECT m.MovementID, m.MovementDate, m.MovementType, m.Qty,
-                                    m.ReferenceID, m.Note, UserName = u.UserName
+                                    m.ReferenceID, m.Note, UserName = u.UserName , m.UserID
                              FROM StockMovements m
                              INNER JOIN Users u ON m.UserID = u.UserID
                              WHERE m.ProductID = @ProductID
@@ -101,39 +116,90 @@ namespace InventoryDB_DataAccess
             {
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+                while (reader.Read())
+                {
+                    StockMovementsList.Add(new StockMovementDTO(
+                        (int)reader["MovementID"],
+                        ProductID, (int)reader["UserID"],
+                        (string)reader["MovementType"],
+                        (int)reader["Qty"],
+                        reader["ReferenceID"] == DBNull.Value ? null :
+                        (int)reader["ReferenceID"],
+                        reader["Note"] == DBNull.Value
+    ? ""
+    : reader["Note"].ToString() ?? "",
+                        (DateTime)reader["MovementDate"]
+                        ));
+                }
                 reader.Close();
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw;}
             finally { connection.Close(); }
-            return dt;
+            return StockMovementsList;
         }
 
-        public static DataTable GetAllMovements(int AccountID)
+        public static List<clsStockMovement> GetAllMovements(int AccountID)
         {
-            DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"SELECT m.MovementID, m.MovementDate, ProductName = p.Name, p.SKU,
-                                    m.MovementType, m.Qty, m.ReferenceID, m.Note, UserName = u.UserName
-                             FROM StockMovements m
-                             INNER JOIN Products p ON m.ProductID = p.ProductID
-                             INNER JOIN Users u ON m.UserID = u.UserID
-                             WHERE p.AccountID = @AccountID
-                             ORDER BY m.MovementDate DESC";
+            List<clsStockMovement> movements = new List<clsStockMovement>();
+
+            SqlConnection connection = new SqlConnection(
+                clsDataAccessSettings.ConnectionString);
+
+            string query = @"SELECT m.MovementID, m.MovementDate,
+                            ProductName = p.Name, p.SKU,
+                            m.MovementType, m.Qty, m.ReferenceID,
+                            m.Note, UserName = u.UserName
+                     FROM StockMovements m
+                     INNER JOIN Products p
+                        ON m.ProductID = p.ProductID
+                     INNER JOIN Users u
+                        ON m.UserID = u.UserID
+                     WHERE p.AccountID = @AccountID
+                     ORDER BY m.MovementDate DESC";
+
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountID", AccountID);
+
             try
             {
                 connection.Open();
+
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+
+                while (reader.Read())
+                {
+                    movements.Add(new clsStockMovement
+                    {
+                        MovementID = (int)reader["MovementID"],
+                        MovementDate = (DateTime)reader["MovementDate"],
+                        ProductName = reader["ProductName"].ToString(),
+                        SKU = reader["SKU"].ToString(),
+                        MovementType = reader["MovementType"].ToString(),
+                        Qty = (int)reader["Qty"],
+                        ReferenceID = reader["ReferenceID"] == DBNull.Value
+                            ? null
+                            : (int?)reader["ReferenceID"],
+                        Note = reader["Note"] == DBNull.Value
+                            ? null
+                            : reader["Note"].ToString(),
+                        UserName = reader["UserName"].ToString()
+                    });
+                }
+
                 reader.Close();
             }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return dt;
-        }
+            catch (Exception ex)
+            {
+                // Handle or log the exception.
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
 
+            return movements;
+        }
         public static int AdjustStock(int AccountID, int UserID, int ProductID,
     int QtyChange, string Note, ref string ErrorMessage)
         {

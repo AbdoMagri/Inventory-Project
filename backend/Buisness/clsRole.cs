@@ -85,7 +85,7 @@ namespace InventoryDB_Business
             return false;
         }
 
-        public static DataTable GetAllRoles()
+        public static List<clsRoleData.RoleDTO> GetAllRoles()
         {
             return clsRoleData.GetAllRoles();
         }

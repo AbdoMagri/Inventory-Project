@@ -12,22 +12,27 @@ namespace InventoryAPI.Controllers
     {
         [HttpGet("All", Name = "GetAllPurchases")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<clsPurchaseData.PurchaseDTO>> GetAllPurchases(int AccountID)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<IEnumerable<clsPurchaseData.PurchaseDTO>> GetAllPurchases(
+    int AccountID)
         {
+            if (AccountID < 1)
+                return BadRequest($"Invalid Account ID {AccountID}");
+
             return Ok(clsPurchase.GetAllPurchases(AccountID));
         }
 
-        [HttpGet("{id:int}", Name = "GetPurchaseByID")]
+        [HttpGet("{AccountId:int}/{id:int}", Name = "GetPurchaseByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<clsPurchaseData.PurchaseDTO> GetPurchaseById(int id)
+        public ActionResult<clsPurchaseData.PurchaseDTO> GetPurchaseById(int AccountId, int id)
         {
             if (id < 1)
                 return BadRequest($"Not accepted ID {id}");
 
             clsPurchase Purchase = clsPurchase.Find(id);
-            if (Purchase == null)
+            if (Purchase == null || Purchase.AccountID != AccountId)
                 return NotFound($"Purchase with ID {id} not found.");
 
             return Ok(Purchase.DTO);

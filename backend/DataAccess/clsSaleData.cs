@@ -14,6 +14,15 @@ namespace InventoryDB_DataAccess
                 SaleID = saleID; AccountID = accountID; CustomerID = customerID; UserID = userID;
                 SaleDate = saleDate; Total = total; Items = items;
             }
+            public SaleDTO(int saleID, string customerName, string userName,
+    DateTime saleDate, decimal total)
+            {
+                SaleID = saleID;
+                CustomerName = customerName;
+                UserName = userName;
+                SaleDate = saleDate;
+                Total = total;
+            }
             public int SaleID { get; set; }
             public int AccountID { get; set; }
             public int? CustomerID { get; set; }
@@ -21,6 +30,8 @@ namespace InventoryDB_DataAccess
             public DateTime SaleDate { get; set; }
             public decimal Total { get; set; }
             public List<Dictionary<string, object?>> Items { get; set; }
+            public string CustomerName { get; set; }
+            public string UserName { get; set; }
         }
         public static bool GetSaleInfoByID(int SaleID, ref int AccountID, ref int? CustomerID,
             ref int UserID, ref DateTime SaleDate, ref decimal Total)
@@ -45,7 +56,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -71,7 +82,7 @@ namespace InventoryDB_DataAccess
         //        if (result != null && int.TryParse(result.ToString(), out int insertedID))
         //            SaleID = insertedID;
         //    }
-        //    catch (Exception ex) { }
+        //    catch (Exception){ throw;}
         //    finally { connection.Close(); }
         //    return SaleID;
         //}
@@ -95,34 +106,63 @@ namespace InventoryDB_DataAccess
         //        connection.Open();
         //        rowsAffected = command.ExecuteNonQuery();
         //    }
-        //    catch (Exception ex) { return false; }
+        //    catch (Exception){ return false; }
         //    finally { connection.Close(); }
         //    return (rowsAffected > 0);
         //}
 
-        public static DataTable GetAllSales(int AccountID)
+        public static List<SaleDTO> GetAllSales(int AccountID)
         {
-            DataTable dt = new DataTable();
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"SELECT s.SaleID, CustomerName = ISNULL(c.Name, 'Walk-in'), UserName = u.UserName,
-                                    s.SaleDate, s.Total
-                             FROM Sales s
-                             LEFT JOIN Customers c ON s.CustomerID = c.CustomerID
-                             INNER JOIN Users u ON s.UserID = u.UserID
-                             WHERE s.AccountID = @AccountID
-                             ORDER BY s.SaleDate DESC";
+            List<SaleDTO> sales = new List<SaleDTO>();
+
+            SqlConnection connection = new SqlConnection(
+                clsDataAccessSettings.ConnectionString);
+
+            string query = @"SELECT s.SaleID,
+                            CustomerName = ISNULL(c.Name, 'Walk-in'),
+                            UserName = u.UserName,
+                            s.SaleDate, s.Total
+                     FROM Sales s
+                     LEFT JOIN Customers c
+                        ON s.CustomerID = c.CustomerID
+                     INNER JOIN Users u
+                        ON s.UserID = u.UserID
+                     WHERE s.AccountID = @AccountID
+                     ORDER BY s.SaleDate DESC";
+
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@AccountID", AccountID);
+
             try
             {
                 connection.Open();
+
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+
+                while (reader.Read())
+                {
+                    sales.Add(new SaleDTO(
+
+                         (int)reader["SaleID"],
+                        reader["CustomerName"].ToString(),
+                        reader["UserName"].ToString(),
+                        (DateTime)reader["SaleDate"],
+                        (decimal)reader["Total"]
+                    ));
+                }
+
                 reader.Close();
             }
-            catch (Exception ex) { }
-            finally { connection.Close(); }
-            return dt;
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+            return sales;
         }
 
         //public static bool DeleteSale(int SaleID)
@@ -137,7 +177,7 @@ namespace InventoryDB_DataAccess
         //        connection.Open();
         //        rowsAffected = command.ExecuteNonQuery();
         //    }
-        //    catch (Exception ex) { }
+        //    catch (Exception){ throw;}
         //    finally { connection.Close(); }
         //    return (rowsAffected > 0);
         //}
@@ -156,7 +196,7 @@ namespace InventoryDB_DataAccess
                 isFound = reader.HasRows;
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }

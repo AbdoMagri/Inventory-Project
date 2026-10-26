@@ -1,6 +1,7 @@
-﻿using System;
+﻿using InventoryDB_DataAccess;
+using System;
 using System.Data;
-using InventoryDB_DataAccess;
+using static InventoryDB_DataAccess.clsSupplierData;
 
 namespace InventoryDB_Business
 {
@@ -83,7 +84,7 @@ namespace InventoryDB_Business
             return false;
         }
 
-        public static DataTable GetAllSuppliers(int AccountID)
+        public static List<SupplierDTO> GetAllSuppliers(int AccountID)
         {
             return clsSupplierData.GetAllSuppliers(AccountID);
         }

@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using System;
 using System.Data;
-using Microsoft.Data.SqlClient;
+using static InventoryDB_DataAccess.clsUserData;
 
 namespace InventoryDB_DataAccess
 {
@@ -37,7 +38,7 @@ namespace InventoryDB_DataAccess
                 }
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }
@@ -62,7 +63,7 @@ namespace InventoryDB_DataAccess
                 if (result != null && int.TryParse(result.ToString(), out int insertedID))
                     SupplierID = insertedID;
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw;}
             finally { connection.Close(); }
             return SupplierID;
         }
@@ -84,14 +85,14 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { return false; }
+            catch (Exception){ return false; }
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
 
-        public static DataTable GetAllSuppliers(int AccountID)
+        public static List<SupplierDTO> GetAllSuppliers(int AccountID)
         {
-            DataTable dt = new DataTable();
+            var SuppliersList = new List<SupplierDTO>();
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
             string query = "SELECT SupplierID, Name, Phone FROM Suppliers WHERE AccountID = @AccountID";
             SqlCommand command = new SqlCommand(query, connection);
@@ -100,12 +101,20 @@ namespace InventoryDB_DataAccess
             {
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.HasRows) { dt.Load(reader); }
+                while (reader.Read())
+                {
+                    SuppliersList.Add(new SupplierDTO(
+                        (int)reader["SupplierID"],
+                        AccountID,
+                        (string)reader["Name"],
+                        (string)reader["Phone"]
+                        ));
+                }
                 reader.Close();
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw;}
             finally { connection.Close(); }
-            return dt;
+            return SuppliersList;
         }
 
         public static bool DeleteSupplier(int SupplierID)
@@ -120,7 +129,7 @@ namespace InventoryDB_DataAccess
                 connection.Open();
                 rowsAffected = command.ExecuteNonQuery();
             }
-            catch (Exception ex) { }
+            catch (Exception){ throw;}
             finally { connection.Close(); }
             return (rowsAffected > 0);
         }
@@ -139,7 +148,7 @@ namespace InventoryDB_DataAccess
                 isFound = reader.HasRows;
                 reader.Close();
             }
-            catch (Exception ex) { isFound = false; }
+            catch (Exception){ isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }

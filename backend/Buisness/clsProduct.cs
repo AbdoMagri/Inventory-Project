@@ -9,15 +9,23 @@ namespace InventoryDB_Business
         public enum enMode { AddNew = 0, Update = 1 };
         public enMode Mode = enMode.AddNew;
 
-        public clsProductData.ProductDTO DTO
+        public clsProductData.ProductListDTO DTO
         {
             get
             {
-                return new clsProductData.ProductDTO(this.ProductID, this.AccountID,
-                    this.CategoryID,
-                    this.UnitID,
-                    this.Name, this.SKU, this.CostPrice, this.SellPrice,
-                    this.MinStock, this.Quantity, this.IsActive, this.ImagePath);
+                return new clsProductData.ProductListDTO(
+                    this.ProductID,
+                    this.Name,
+                    this.SKU,
+                    this.CategoryInfo.Name,
+                    this.UnitInfo.Name,
+                    this.CostPrice,
+                    this.SellPrice,
+                    this.MinStock,
+                    this.Quantity,
+                    this.IsActive,
+                    this.ImagePath
+                );
             }
         }
         public int ProductID { set; get; }
@@ -167,12 +175,12 @@ namespace InventoryDB_Business
             return false;
         }
 
-        public static DataTable GetAllProducts(int AccountID)
+        public static List<clsProductData.ProductListDTO> GetAllProducts(int AccountID)
         {
             return clsProductData.GetAllProducts(AccountID);
         }
 
-        public static DataTable GetLowStockProducts(int AccountID)
+        public static List<clsProductData.LowStockProductDTO> GetLowStockProducts(int AccountID)
         {
             return clsProductData.GetLowStockProducts(AccountID);
         }

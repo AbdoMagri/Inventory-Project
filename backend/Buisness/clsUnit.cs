@@ -75,7 +75,7 @@ namespace InventoryDB_Business
             return false;
         }
 
-        public static DataTable GetAllUnits()
+        public static List<clsUnitData.UnitDTO> GetAllUnits()
         {
             return clsUnitData.GetAllUnits();
         }
