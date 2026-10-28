@@ -70,19 +70,19 @@ namespace InventoryAPI.Controllers
             return Ok(Customer.DTO);
         }
 
-        [HttpDelete("{id:int}", Name = "DeleteCustomer")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult DeleteCustomer(int id)
-        {
-            if (id < 1)
-                return BadRequest("Invalid Customer Data");
+        //[HttpDelete("{id:int}", Name = "DeleteCustomer")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public ActionResult DeleteCustomer(int id)
+        //{
+        //    if (id < 1)
+        //        return BadRequest("Invalid Customer Data");
 
-            if (clsCustomer.DeleteCustomer(id))
-                return Ok("Customer has been deleted");
-            else
-                return NotFound("Customer Not found");
-        }
+        //    if (clsCustomer.DeleteCustomer(id))
+        //        return Ok("Customer has been deleted");
+        //    else
+        //        return NotFound("Customer Not found");
+        //}
     }
 }

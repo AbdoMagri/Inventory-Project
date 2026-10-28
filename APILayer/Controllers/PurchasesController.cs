@@ -59,7 +59,14 @@ namespace InventoryAPI.Controllers
             if (PurchaseID == -1)
                 return BadRequest(ErrorMessage);
 
-            return CreatedAtRoute("GetPurchaseByID", new { id = PurchaseID }, new { PurchaseID });
+            return CreatedAtRoute(
+    "GetPurchaseByID",
+    new
+    {
+        AccountId = request.AccountID,
+        id = PurchaseID
+    },
+    new { PurchaseID });
         }
     }
 }

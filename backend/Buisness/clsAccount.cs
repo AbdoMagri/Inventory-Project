@@ -32,7 +32,7 @@ namespace InventoryDB_Business
             this.AccountID = DTO.AccountID;
             this.Name = DTO.Name;
             this.CreatedAt = DTO.CreatedAt;
-            Mode = enMode.Update;
+            Mode = enMode.AddNew;
             this.ImagePath = DTO.ImagePath;
         }
 
@@ -92,10 +92,10 @@ namespace InventoryDB_Business
             return clsAccountData.GetAllAccounts();
         }
 
-        public static bool DeleteAccount(int AccountID)
-        {
-            return clsAccountData.DeleteAccount(AccountID);
-        }
+        //public static bool DeleteAccount(int AccountID)
+        //{
+        //    return clsAccountData.DeleteAccount(AccountID);
+        //}
 
         public static bool isAccountExist(int AccountID)
         {

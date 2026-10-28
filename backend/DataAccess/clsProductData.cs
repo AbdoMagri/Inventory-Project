@@ -20,8 +20,6 @@ namespace InventoryDB_DataAccess
             public int ProductID { get; set; }
             public int AccountID { get; set; }
             public int? CategoryID { get; set; }
-            public string CategoryName { get; set; }
-            public string UnitName { get; set; }
             public int UnitID { get; set; }
             public string Name { get; set; }
             public string SKU { get; set; }

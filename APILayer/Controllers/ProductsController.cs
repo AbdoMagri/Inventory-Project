@@ -56,26 +56,54 @@ namespace InventoryAPI.Controllers
             return Ok(Product.DTO);
         }
 
-        [HttpPost(Name = "AddProduct")]
+
+        [HttpPost("{AccountID}", Name = "AddProduct")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public ActionResult<clsProductData.ProductDTO> AddProduct(clsProductData.ProductDTO newProductDTO, int AccountID)
+        public ActionResult<clsProductData.ProductDTO> AddProduct(
+             clsProductData.ProductDTO newProductDTO, int AccountID)
         {
-            if (newProductDTO == null || string.IsNullOrWhiteSpace(newProductDTO.Name)
-                || string.IsNullOrWhiteSpace(newProductDTO.SKU))
-                return BadRequest("Invalid Product Data");
+            if (newProductDTO == null ||
+                string.IsNullOrWhiteSpace(newProductDTO.Name) ||
+                string.IsNullOrWhiteSpace(newProductDTO.SKU))
+            {
+                return BadRequest("Invalid Product Data.");
+            }
+
+            if (AccountID <= 0)
+                return BadRequest("Invalid AccountID.");
 
             if (clsProduct.isSKUExist(AccountID, newProductDTO.SKU))
                 return Conflict("SKU already exists.");
 
-            clsProduct Product = new clsProduct(newProductDTO);
-            if (!Product.Save())
+            // Build the business-layer DTO.
+            var productDTO = new clsProductData.ProductDTO(
+    0, // ProductID: new product
+    AccountID,
+    newProductDTO.CategoryID,
+    newProductDTO.UnitID,
+    newProductDTO.Name,
+    newProductDTO.SKU,
+    newProductDTO.CostPrice,
+    newProductDTO.SellPrice,
+    newProductDTO.MinStock,
+    newProductDTO.Quantity,
+    newProductDTO.IsActive,
+    newProductDTO.ImagePath ?? ""
+);
+
+            var product = new clsProduct(productDTO);
+
+            if (!product.Save())
                 return BadRequest("Failed to save the product.");
 
-            newProductDTO.ProductID = Product.ProductID;
-            return CreatedAtRoute("GetProductByID", new { id = newProductDTO.ProductID }, newProductDTO);
+            // Return the saved product with its generated ID.
+            productDTO.ProductID = product.ProductID;
+
+            return StatusCode(201, productDTO);
         }
+
 
         // Quantity is not updated here, it only changes through sales, purchases and stock adjustments
         [HttpPut("{id:int}", Name = "UpdateProduct")]
@@ -116,7 +144,7 @@ namespace InventoryAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult DeleteProduct(int id)
+        public ActionResult DeleteProduct(int AccountID, int id)
         {
             if (id < 1)
                 return BadRequest("Invalid Product Data");

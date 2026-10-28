@@ -18,6 +18,15 @@ namespace InventoryDB_DataAccess
             public DateTime CreatedAt { get; set; }
             public string ImagePath { get; set; }
         }
+        public class AccountDTOForUpdate
+        {
+            public AccountDTOForUpdate(string name, string imagePath)
+            {
+                Name = name;  ImagePath = imagePath;
+            }
+            public string Name { get; set; }
+            public string ImagePath { get; set; }
+        }
         public static bool GetAccountInfoByID(int AccountID, ref string Name, ref DateTime CreatedAt, ref string ImagePath)
         {
             bool isFound = false;
@@ -131,22 +140,22 @@ namespace InventoryDB_DataAccess
 
             return accounts;
         }
-        public static bool DeleteAccount(int AccountID)
-        {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "DELETE Accounts WHERE AccountID = @AccountID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@AccountID", AccountID);
-            try
-            {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception){ throw; }
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+        //public static bool DeleteAccount(int AccountID)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = "DELETE Accounts WHERE AccountID = @AccountID";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@AccountID", AccountID);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception){ throw; }
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
 
         public static bool IsAccountExist(int AccountID)
         {

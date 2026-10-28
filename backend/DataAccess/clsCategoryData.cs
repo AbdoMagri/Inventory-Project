@@ -122,21 +122,24 @@ namespace InventoryDB_DataAccess
             return categories;
         }
 
-        public static bool DeleteCategory(int CategoryID)
+        public static bool DeleteCategory(int AccountID, int CategoryID)
         {
-            int rowsAffected = 0;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "DELETE Categories WHERE CategoryID = @CategoryID";
-            SqlCommand command = new SqlCommand(query, connection);
+            SqlCommand command = new SqlCommand("sp_DeleteCategory", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@AccountID", AccountID);
             command.Parameters.AddWithValue("@CategoryID", CategoryID);
+
             try
             {
                 connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
             }
-            catch (Exception){ throw;}
+            catch (Exception) { throw; }
             finally { connection.Close(); }
-            return (rowsAffected > 0);
+
+            return true;   // reaching here means the procedure didn't throw, so the category was deleted
         }
 
         public static bool IsCategoryExist(int AccountID, string Name)

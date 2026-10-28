@@ -98,22 +98,22 @@ namespace InventoryDB_DataAccess
             return UnitsList;
         }
 
-        public static bool DeleteUnit(int UnitID)
-        {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "DELETE Units WHERE UnitID = @UnitID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@UnitID", UnitID);
-            try
-            {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception){ throw;}
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+        //public static bool DeleteUnit(int UnitID)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = "DELETE Units WHERE UnitID = @UnitID";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@UnitID", UnitID);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception){ throw;}
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
 
         public static bool IsUnitExist(int UnitID)
         {
@@ -130,6 +130,24 @@ namespace InventoryDB_DataAccess
                 reader.Close();
             }
             catch (Exception){ isFound = false; }
+            finally { connection.Close(); }
+            return isFound;
+        }
+        public static bool isNameUnitExist(string Name)
+        {
+            bool isFound = false;
+            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+            string query = "SELECT Found=1 FROM Units WHERE Name = @Name";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Name", Name);
+            try
+            {
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                isFound = reader.HasRows;
+                reader.Close();
+            }
+            catch (Exception) { isFound = false; }
             finally { connection.Close(); }
             return isFound;
         }

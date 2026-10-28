@@ -39,7 +39,10 @@ namespace InventoryAPI.Controllers
         {
             if (newUnitDTO == null || string.IsNullOrWhiteSpace(newUnitDTO.Name))
                 return BadRequest("Invalid Unit Data");
-
+            if (clsUnit.isNameUnitExist(newUnitDTO.Name))
+            {
+                return BadRequest("Unit Name is already exists");
+            }
             clsUnit Unit = new clsUnit(newUnitDTO);
             if (!Unit.Save())
                 return BadRequest("Failed to save the unit.");
@@ -69,19 +72,19 @@ namespace InventoryAPI.Controllers
             return Ok(Unit.DTO);
         }
 
-        [HttpDelete("{id:int}", Name = "DeleteUnit")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult DeleteUnit(int id)
-        {
-            if (id < 1)
-                return BadRequest("Invalid Unit Data");
+        //[HttpDelete("{id:int}", Name = "DeleteUnit")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public ActionResult DeleteUnit(int id)
+        //{
+        //    if (id < 1)
+        //        return BadRequest("Invalid Unit Data");
 
-            if (clsUnit.DeleteUnit(id))
-                return Ok("Unit has been deleted");
-            else
-                return NotFound("Unit Not found");
-        }
+        //    if (clsUnit.DeleteUnit(id))
+        //        return Ok("Unit has been deleted");
+        //    else
+        //        return NotFound("Unit Not found");
+        //}
     }
 }

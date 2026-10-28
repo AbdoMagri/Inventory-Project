@@ -114,7 +114,7 @@ namespace InventoryDB_DataAccess
                     customers.Add(new CustomerDTO(
                         (int)reader["CustomerID"],
                         AccountID,
-                        reader["Name"].ToString(),
+                        reader["Name"]?.ToString() ?? string.Empty,
                         reader["Phone"] == DBNull.Value
                             ? null
                             : reader["Phone"].ToString()
@@ -135,22 +135,22 @@ namespace InventoryDB_DataAccess
             return customers;
         }
 
-        public static bool DeleteCustomer(int CustomerID)
-        {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "DELETE Customers WHERE CustomerID = @CustomerID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@CustomerID", CustomerID);
-            try
-            {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception){ throw;}
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+        //public static bool DeleteCustomer(int CustomerID)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = "DELETE Customers WHERE CustomerID = @CustomerID";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@CustomerID", CustomerID);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception){ throw;}
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
 
         public static bool IsCustomerExist(int CustomerID)
         {

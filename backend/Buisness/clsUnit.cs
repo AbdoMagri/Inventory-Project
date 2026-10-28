@@ -26,7 +26,7 @@ namespace InventoryDB_Business
         {
             this.UnitID = DTO.UnitID;
             this.Name = DTO.Name;
-            Mode = enMode.Update;
+            Mode = enMode.AddNew;
         }
         private clsUnit(int UnitID, string Name)
         {
@@ -80,14 +80,18 @@ namespace InventoryDB_Business
             return clsUnitData.GetAllUnits();
         }
 
-        public static bool DeleteUnit(int UnitID)
-        {
-            return clsUnitData.DeleteUnit(UnitID);
-        }
+        //public static bool DeleteUnit(int UnitID)
+        //{
+        //    return clsUnitData.DeleteUnit(UnitID);
+        //}
 
         public static bool isUnitExist(int UnitID)
         {
             return clsUnitData.IsUnitExist(UnitID);
+        }
+        public static bool isNameUnitExist(string Name)
+        {
+            return clsUnitData.isNameUnitExist(Name);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace InventoryAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<clsAccountData.AccountDTO> UpdateAccount(int id, clsAccountData.AccountDTO updatedAccount)
+        public ActionResult<clsAccountData.AccountDTO> UpdateAccount(int id, clsAccountData.AccountDTOForUpdate updatedAccount)
         {
             if (id < 1 || updatedAccount == null || string.IsNullOrWhiteSpace(updatedAccount.Name))
                 return BadRequest("Invalid Account Data.");
@@ -70,19 +70,19 @@ namespace InventoryAPI.Controllers
             return Ok(Account.DTO);
         }
 
-        [HttpDelete("{id:int}", Name = "DeleteAccount")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult DeleteAccount(int id)
-        {
-            if (id < 1)
-                return BadRequest("Invalid Account Data");
+        //[HttpDelete("{id:int}", Name = "DeleteAccount")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public ActionResult DeleteAccount(int id)
+        //{
+        //    if (id < 1)
+        //        return BadRequest("Invalid Account Data");
 
-            if (clsAccount.DeleteAccount(id))
-                return Ok("Account has been deleted");
-            else
-                return NotFound("Account Not found");
-        }
+        //    if (clsAccount.DeleteAccount(id))
+        //        return Ok("Account has been deleted");
+        //    else
+        //        return NotFound("Account Not found");
+        //}
     }
 }

@@ -73,7 +73,7 @@ namespace InventoryDB_Business
             this.Quantity = DTO.Quantity;
             this.IsActive = DTO.IsActive;
             this.ImagePath = DTO.ImagePath;
-            Mode = enMode.Update;
+            Mode = enMode.AddNew;
         }
         private clsProduct(int ProductID, int AccountID, int? CategoryID, int UnitID, string Name,
             string SKU, decimal CostPrice, decimal SellPrice, int MinStock, int Quantity, bool IsActive, string ImagePath)

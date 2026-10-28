@@ -2,6 +2,7 @@
 using InventoryDB_DataAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace InventoryAPI.Controllers
 {
@@ -78,19 +79,35 @@ namespace InventoryAPI.Controllers
             return Ok(Category.DTO);
         }
 
-        [HttpDelete("{id:int}", Name = "DeleteCategory")]
+        [HttpDelete("{AccountID:int}/{id:int}", Name = "DeleteCategory")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult DeleteCategory(int id)
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public ActionResult DeleteCategory(int AccountID, int id)
         {
             if (id < 1)
                 return BadRequest("Invalid Category Data");
+            try
+            {
+                if (clsCategory.DeleteCategory(AccountID, id))
+                    return Ok("Category has been deleted");
+            }
+            catch (SqlException ex) when (ex.Number == 50031)
+            {
+                return NotFound(ex.Message);   // "Category not found."
+            }
+            catch (SqlException ex) when (ex.Number == 50032)
+            {
+                return Conflict(ex.Message);   // "Cannot delete this category because it still has products."
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Could not delete category");
+            }
 
-            if (clsCategory.DeleteCategory(id))
-                return Ok("Category has been deleted");
-            else
-                return NotFound("Category Not found");
+            return BadRequest("Could not delete category");
         }
     }
 }

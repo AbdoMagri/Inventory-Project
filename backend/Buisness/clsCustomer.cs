@@ -89,10 +89,10 @@ namespace InventoryDB_Business
             return clsCustomerData.GetAllCustomers(AccountID);
         }
 
-        public static bool DeleteCustomer(int CustomerID)
-        {
-            return clsCustomerData.DeleteCustomer(CustomerID);
-        }
+        //public static bool DeleteCustomer(int CustomerID)
+        //{
+        //    return clsCustomerData.DeleteCustomer(CustomerID);
+        //}
 
         public static bool isCustomerExist(int CustomerID)
         {

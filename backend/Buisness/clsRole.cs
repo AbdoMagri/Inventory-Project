@@ -27,7 +27,7 @@ namespace InventoryDB_Business
         {
             this.RoleID = DTO.RoleID;
             this.Name = DTO.Name;
-            Mode = enMode.Update;
+            Mode = enMode.AddNew;
         }
         private clsRole(int RoleID, string Name)
         {
@@ -42,10 +42,10 @@ namespace InventoryDB_Business
             return (this.RoleID != -1);
         }
 
-        private bool _UpdateRole()
-        {
-            return clsRoleData.UpdateRole(this.RoleID, this.Name);
-        }
+        //private bool _UpdateRole()
+        //{
+        //    return clsRoleData.UpdateRole(this.RoleID, this.Name);
+        //}
 
         public static clsRole Find(int RoleID)
         {
@@ -79,8 +79,8 @@ namespace InventoryDB_Business
                     else
                         return false;
 
-                case enMode.Update:
-                    return _UpdateRole();
+                //case enMode.Update:
+                //    return _UpdateRole();
             }
             return false;
         }
@@ -90,10 +90,10 @@ namespace InventoryDB_Business
             return clsRoleData.GetAllRoles();
         }
 
-        public static bool DeleteRole(int RoleID)
-        {
-            return clsRoleData.DeleteRole(RoleID);
-        }
+        //public static bool DeleteRole(int RoleID)
+        //{
+        //    return clsRoleData.DeleteRole(RoleID);
+        //}
 
         public static bool isRoleExist(int RoleID)
         {

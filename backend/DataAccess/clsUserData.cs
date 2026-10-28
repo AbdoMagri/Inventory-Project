@@ -175,28 +175,44 @@ namespace InventoryDB_DataAccess
             return UsersList;
         }
 
-        public static bool DeleteUser(int UserID)
+        //public static bool DeleteUser(int UserID)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = "DELETE Users WHERE UserID = @UserID";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@UserID", UserID);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception){ throw;}
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
+        public static bool DeactivateUser(int AccountID, int UserID, int ActingUserID)
         {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "DELETE Users WHERE UserID = @UserID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@UserID", UserID);
-            try
+            using (SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString))
+            using (SqlCommand command = new SqlCommand("sp_DeactivateUser", connection))
             {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception){ throw;}
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+                command.CommandType = CommandType.StoredProcedure;
 
+                command.Parameters.AddWithValue("@AccountID", AccountID);
+                command.Parameters.AddWithValue("@UserID", UserID);
+                command.Parameters.AddWithValue("@ActingUserID", ActingUserID);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+
+            return true;   
+        }
         public static bool IsUserExist(int UserID)
         {
             bool isFound = false;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "SELECT Found=1 FROM Users WHERE UserID = @UserID";
+            string query = "SELECT Found=1 FROM Users WHERE UserID = @UserID and AccountID = @AccountID";
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@UserID", UserID);
             try
@@ -215,7 +231,7 @@ namespace InventoryDB_DataAccess
         {
             bool isFound = false;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "SELECT Found=1 FROM Users WHERE UserName = @UserName";
+            string query = "SELECT Found=1 FROM Users WHERE UserName = @UserName ";
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@UserName", UserName);
             try

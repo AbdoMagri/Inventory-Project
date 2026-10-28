@@ -117,21 +117,24 @@ namespace InventoryDB_DataAccess
             return SuppliersList;
         }
 
-        public static bool DeleteSupplier(int SupplierID)
+        public static bool DeleteSupplier(int AccountID, int SupplierID)
         {
-            int rowsAffected = 0;
             SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "DELETE Suppliers WHERE SupplierID = @SupplierID";
-            SqlCommand command = new SqlCommand(query, connection);
+            SqlCommand command = new SqlCommand("sp_DeleteSupplier", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@AccountID", AccountID);
             command.Parameters.AddWithValue("@SupplierID", SupplierID);
+
             try
             {
                 connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
             }
-            catch (Exception){ throw;}
+            catch (Exception) { throw; }
             finally { connection.Close(); }
-            return (rowsAffected > 0);
+
+            return true;   // reaching here means the procedure didn't throw
         }
 
         public static bool IsSupplierExist(int SupplierID)

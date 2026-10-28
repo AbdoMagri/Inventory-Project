@@ -2,6 +2,7 @@
 using InventoryDB_DataAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace InventoryAPI.Controllers
 {
@@ -22,11 +23,11 @@ namespace InventoryAPI.Controllers
             return Ok(UsersList);
         }
 
-        [HttpGet("one", Name = "GetUserByID")]
+        [HttpGet("{accountID}/{id}", Name = "GetUserByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<clsUserData.UserDTO> GetUserById(int id)
+        public ActionResult<clsUserData.UserDTO> GetUserById(int accountID, int id)
         {
             if (id < 1)
             {
@@ -34,7 +35,7 @@ namespace InventoryAPI.Controllers
             }
             clsUser User = clsUser.FindByUserID(id);
 
-            if (User == null) {
+            if (User == null || User.AccountID != accountID) {
                 return NotFound($"User with ID {id} not found.");
             }
             clsUserData.UserDTO UDTO = User.UDTO;
@@ -51,13 +52,15 @@ namespace InventoryAPI.Controllers
             if (newUserDTO == null || string.IsNullOrEmpty(newUserDTO.UserName) || string.IsNullOrEmpty(newUserDTO.RoleName)) {
                 return BadRequest("Invalid User Data");
             }
+            if (clsUser.isUserExist(newUserDTO.UserName))
+                return BadRequest("Username already exists");
 
             clsUser User = new clsUser(new clsUserData.UserDTO(newUserDTO.Id, newUserDTO.UserName, newUserDTO.RoleName, newUserDTO.IsActive), AccountID, Password);
             User.Save();
 
             newUserDTO.Id = User.UserID;
 
-            return CreatedAtRoute("GetUserById", new {id = newUserDTO.Id}, newUserDTO);
+            return CreatedAtRoute("GetUserById", new {AccountID ,id = newUserDTO.Id}, newUserDTO);
         }
 
 
@@ -130,23 +133,53 @@ namespace InventoryAPI.Controllers
             return Ok("Password changed successfully.");
         }
 
-
-        [HttpDelete("{id:int}", Name = "DeleteUser")]
+        [HttpPatch("{AccountID:int}/{id:int}/Deactivate", Name = "DeactivateUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
-        public ActionResult DeleteUser(int id)
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public ActionResult DeactivateUser(int AccountID, int id, [FromQuery] int actingUserID)
         {
-            if (id < 0) {
-                return BadRequest("Invalid User Data");
-            }
-
-            if (clsUser.DeleteUser(id))
-                return Ok($"User has been deleted");
-            else
-                return NotFound("User Not found");
             
+            if (id < 1 || AccountID < 1 || actingUserID < 1)
+                return BadRequest("Invalid user data.");
+
+            try
+            {
+                clsUser.DeactivateUser(AccountID, id, actingUserID);
+                return Ok("User has been deactivated.");
+            }
+            catch (SqlException ex) when (ex.Number == 50051)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (SqlException ex) when (ex.Number >= 50052 && ex.Number <= 50054)
+            {
+                return Conflict(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Could not deactivate user.");
+            }
         }
+
+
+        //[HttpDelete("{id:int}", Name = "DeleteUser")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        //public ActionResult DeleteUser(int id)
+        //{
+        //    if (id < 0) {
+        //        return BadRequest("Invalid User Data");
+        //    }
+
+        //    if (clsUser.DeleteUser(id))
+        //        return Ok($"User has been deleted");
+        //    else
+        //        return NotFound("User Not found");
+
+        //}
     }
 }

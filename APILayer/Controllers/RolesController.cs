@@ -62,40 +62,40 @@ namespace InventoryAPI.Controllers
             return CreatedAtRoute("GetRoleByID", new { id = newRoleDTO.RoleID }, newRoleDTO);
         }
 
-        [HttpPut("{id:int}", Name = "UpdateRole")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<clsRoleData.RoleDTO> UpdateRole(int id, clsRoleData.RoleDTO updatedRole)
-        {
-            if (id < 1 || updatedRole == null || string.IsNullOrWhiteSpace(updatedRole.Name))
-                return BadRequest("Invalid Role Data.");
+        //[HttpPut("{id:int}", Name = "UpdateRole")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public ActionResult<clsRoleData.RoleDTO> UpdateRole(int id, clsRoleData.RoleDTO updatedRole)
+        //{
+        //    if (id < 1 || updatedRole == null || string.IsNullOrWhiteSpace(updatedRole.Name))
+        //        return BadRequest("Invalid Role Data.");
 
-            clsRole Role = clsRole.Find(id);
-            if (Role == null)
-                return NotFound("Role Not Found");
+        //    clsRole Role = clsRole.Find(id);
+        //    if (Role == null)
+        //        return NotFound("Role Not Found");
 
-            Role.Name = updatedRole.Name;
+        //    Role.Name = updatedRole.Name;
 
-            if (!Role.Save())
-                return BadRequest("Failed to update the role.");
+        //    if (!Role.Save())
+        //        return BadRequest("Failed to update the role.");
 
-            return Ok(Role.DTO);
-        }
+        //    return Ok(Role.DTO);
+        //}
 
-        [HttpDelete("{id:int}", Name = "DeleteRole")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult DeleteRole(int id)
-        {
-            if (id < 1)
-                return BadRequest("Invalid Role Data");
+        //[HttpDelete("{id:int}", Name = "DeleteRole")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public ActionResult DeleteRole(int id)
+        //{
+        //    if (id < 1)
+        //        return BadRequest("Invalid Role Data");
 
-            if (clsRole.DeleteRole(id))
-                return Ok("Role has been deleted");
-            else
-                return NotFound("Role Not found");
-        }
+        //    if (clsRole.DeleteRole(id))
+        //        return Ok("Role has been deleted");
+        //    else
+        //        return NotFound("Role Not found");
+        //}
     }
 }

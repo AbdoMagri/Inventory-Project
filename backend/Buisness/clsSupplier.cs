@@ -32,7 +32,7 @@ namespace InventoryDB_Business
             this.AccountID = DTO.AccountID;
             this.Name = DTO.Name;
             this.Phone = DTO.Phone;
-            Mode = enMode.Update;
+            Mode = enMode.AddNew;
         }
         private clsSupplier(int SupplierID, int AccountID, string Name, string Phone)
         {
@@ -79,7 +79,10 @@ namespace InventoryDB_Business
                         return false;
 
                 case enMode.Update:
-                    return _UpdateSupplier();
+                    
+                        return _UpdateSupplier();
+                    
+                    
             }
             return false;
         }
@@ -89,9 +92,9 @@ namespace InventoryDB_Business
             return clsSupplierData.GetAllSuppliers(AccountID);
         }
 
-        public static bool DeleteSupplier(int SupplierID)
+        public static bool DeleteSupplier(int AccountID, int SupplierID)
         {
-            return clsSupplierData.DeleteSupplier(SupplierID);
+            return clsSupplierData.DeleteSupplier(AccountID, SupplierID);
         }
 
         public static bool isSupplierExist(int SupplierID)

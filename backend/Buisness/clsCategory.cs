@@ -85,9 +85,9 @@ namespace InventoryDB_Business
             return clsCategoryData.GetAllCategories(AccountID);
         }
 
-        public static bool DeleteCategory(int CategoryID)
+        public static bool DeleteCategory(int AccountID, int CategoryID)
         {
-            return clsCategoryData.DeleteCategory(CategoryID);
+            return clsCategoryData.DeleteCategory(AccountID, CategoryID);
         }
 
         public static bool isCategoryExist(int AccountID, string Name)

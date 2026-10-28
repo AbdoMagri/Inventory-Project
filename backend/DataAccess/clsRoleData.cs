@@ -77,23 +77,23 @@ namespace InventoryDB_DataAccess
             return RoleID;
         }
 
-        public static bool UpdateRole(int RoleID, string Name)
-        {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "UPDATE Roles SET Name = @Name WHERE RoleID = @RoleID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@RoleID", RoleID);
-            command.Parameters.AddWithValue("@Name", Name);
-            try
-            {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception){ return false; }
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+        //public static bool UpdateRole(int RoleID, string Name)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = "UPDATE Roles SET Name = @Name WHERE RoleID = @RoleID";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@RoleID", RoleID);
+        //    command.Parameters.AddWithValue("@Name", Name);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception){ return false; }
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
 
         public static List<RoleDTO> GetAllRoles()
         {
@@ -134,22 +134,22 @@ namespace InventoryDB_DataAccess
             return roles;
         }
 
-        public static bool DeleteRole(int RoleID)
-        {
-            int rowsAffected = 0;
-            SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = "DELETE Roles WHERE RoleID = @RoleID";
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@RoleID", RoleID);
-            try
-            {
-                connection.Open();
-                rowsAffected = command.ExecuteNonQuery();
-            }
-            catch (Exception) { throw; }
-            finally { connection.Close(); }
-            return (rowsAffected > 0);
-        }
+        //public static bool DeleteRole(int RoleID)
+        //{
+        //    int rowsAffected = 0;
+        //    SqlConnection connection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+        //    string query = "DELETE Roles WHERE RoleID = @RoleID";
+        //    SqlCommand command = new SqlCommand(query, connection);
+        //    command.Parameters.AddWithValue("@RoleID", RoleID);
+        //    try
+        //    {
+        //        connection.Open();
+        //        rowsAffected = command.ExecuteNonQuery();
+        //    }
+        //    catch (Exception) { throw; }
+        //    finally { connection.Close(); }
+        //    return (rowsAffected > 0);
+        //}
 
         public static bool IsRoleExist(int RoleID)
         {
