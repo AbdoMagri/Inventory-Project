@@ -15,6 +15,10 @@ namespace InventoryAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<IEnumerable<clsUserData.UserDTO>> GetAllUsers(int AccountID)
         {
+            if (AccountID < 1)
+                return BadRequest($"Invalid Account ID {AccountID}");
+            if (!clsAccount.isAccountExist(AccountID))
+                return NotFound("Account Not Found");
             List<clsUserData.UserDTO> UsersList = clsUser.GetAllUsers(AccountID);
             if (UsersList.Count == 0)
             {

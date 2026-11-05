@@ -18,6 +18,8 @@ namespace InventoryAPI.Controllers
         {
             if (AccountID < 1)
                 return BadRequest($"Invalid Account ID {AccountID}");
+            if (!clsAccount.isAccountExist(AccountID))
+                return NotFound("Account Not Found");
 
             return Ok(clsPurchase.GetAllPurchases(AccountID));
         }

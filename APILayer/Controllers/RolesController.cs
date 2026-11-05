@@ -46,21 +46,21 @@ namespace InventoryAPI.Controllers
                 .Select(p => p.ToString()));
         }
 
-        [HttpPost(Name = "AddRole")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<clsRoleData.RoleDTO> AddRole(clsRoleData.RoleDTO newRoleDTO)
-        {
-            if (newRoleDTO == null || string.IsNullOrWhiteSpace(newRoleDTO.Name))
-                return BadRequest("Invalid Role Data");
+        //[HttpPost(Name = "AddRole")]
+        //[ProducesResponseType(StatusCodes.Status201Created)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public ActionResult<clsRoleData.RoleDTO> AddRole(clsRoleData.RoleDTO newRoleDTO)
+        //{
+        //    if (newRoleDTO == null || string.IsNullOrWhiteSpace(newRoleDTO.Name))
+        //        return BadRequest("Invalid Role Data");
 
-            clsRole Role = new clsRole(newRoleDTO);
-            if (!Role.Save())
-                return BadRequest("Failed to save the role.");
+        //    clsRole Role = new clsRole(newRoleDTO);
+        //    if (!Role.Save())
+        //        return BadRequest("Failed to save the role.");
 
-            newRoleDTO.RoleID = Role.RoleID;
-            return CreatedAtRoute("GetRoleByID", new { id = newRoleDTO.RoleID }, newRoleDTO);
-        }
+        //    newRoleDTO.RoleID = Role.RoleID;
+        //    return CreatedAtRoute("GetRoleByID", new { id = newRoleDTO.RoleID }, newRoleDTO);
+        //}
 
         //[HttpPut("{id:int}", Name = "UpdateRole")]
         //[ProducesResponseType(StatusCodes.Status200OK)]
