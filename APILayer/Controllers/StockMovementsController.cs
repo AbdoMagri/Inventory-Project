@@ -1,11 +1,13 @@
 ﻿using InventoryAPI.Models;
 using InventoryDB_Business;
 using InventoryDB_DataAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryAPI.Controllers
 {
+    [Authorize]
     [Route("api/StockMovements")]
     [ApiController]
     public class StockMovementsController : ControllerBase
@@ -49,6 +51,7 @@ namespace InventoryAPI.Controllers
         }
 
         // QtyChange is signed: +5 found extra, -3 damaged/lost
+        [Authorize(Roles = "Admin,Manager,Storekeeper")]
         [HttpPost("Adjust", Name = "AdjustStock")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

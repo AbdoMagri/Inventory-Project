@@ -1,11 +1,13 @@
 ﻿using InventoryDB_Business;
 using InventoryDB_DataAccess;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
 namespace InventoryAPI.Controllers
 {
+    [Authorize(Roles = "Admin,Manager,Storekeeper")]
     [Route("api/Suppliers")]
     [ApiController]
     public class SuppliersController : ControllerBase

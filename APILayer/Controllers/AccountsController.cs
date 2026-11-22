@@ -1,10 +1,12 @@
 ﻿using InventoryDB_Business;
 using InventoryDB_DataAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryAPI.Controllers
 {
+    [Authorize]
     [Route("api/Accounts")]
     [ApiController]
     public class AccountsController : ControllerBase
@@ -48,6 +50,7 @@ namespace InventoryAPI.Controllers
             return CreatedAtRoute("GetAccountByID", new { id = newAccountDTO.AccountID }, newAccountDTO);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id:int}", Name = "UpdateAccount")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

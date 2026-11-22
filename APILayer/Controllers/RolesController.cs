@@ -1,10 +1,12 @@
 ﻿using InventoryDB_Business;
 using InventoryDB_DataAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryAPI.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/Roles")]
     [ApiController]
     public class RolesController : ControllerBase

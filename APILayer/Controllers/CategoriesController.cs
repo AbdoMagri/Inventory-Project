@@ -1,11 +1,13 @@
 ﻿using InventoryDB_Business;
 using InventoryDB_DataAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
 namespace InventoryAPI.Controllers
 {
+    [Authorize(Roles = "Admin,Manager,Storekeeper")]
     [Route("api/Categories")]
     [ApiController]
     public class CategoriesController : ControllerBase

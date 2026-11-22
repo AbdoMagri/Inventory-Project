@@ -1,15 +1,18 @@
 ﻿using InventoryAPI.Models;
 using InventoryDB_Business;
+using Microsoft.AspNetCore.Authorization;
 using InventoryDB_DataAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryAPI.Controllers
 {
+    [Authorize]
     [Route("api/Sales")]
     [ApiController]
     public class SalesController : ControllerBase
     {
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet("All", Name = "GetAllSales")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<clsSaleData.SaleDTO>> GetAllSales(int AccountID)
@@ -21,6 +24,7 @@ namespace InventoryAPI.Controllers
             return Ok(clsSale.GetAllSales(AccountID));
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet("{id:int}", Name = "GetSaleByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,6 +41,7 @@ namespace InventoryAPI.Controllers
             return Ok(Sale.DTO);
         }
 
+        [Authorize(Roles = "Admin,Manager,Cashier")]
         [HttpPost(Name = "MakeSale")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
