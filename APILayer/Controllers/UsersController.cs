@@ -4,14 +4,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace InventoryAPI.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [Route("api/Users")]
     [ApiController]
     public class UsersController : ControllerBase
     {
+        [Authorize(Roles = "Admin")]
         [HttpGet("All", Name ="GetAllUsers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -29,27 +32,42 @@ namespace InventoryAPI.Controllers
             return Ok(UsersList);
         }
 
-        [HttpGet("{accountID}/{id}", Name = "GetUserByID")]
+        [HttpGet("{id}", Name = "GetUserByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<clsUserData.UserDTO> GetUserById(int accountID, int id)
+        public async Task<ActionResult<clsUserData.UserDTO>> GetUserById( int id, [FromServices] IAuthorizationService authorizationService)
         {
             if (id < 1)
             {
                 return BadRequest($"Not accepted ID {id}");
             }
-            clsUser User = clsUser.FindByUserID(id);
+            clsUser UserD = clsUser.FindByUserID(id);
 
-            if (User == null || User.AccountID != accountID) {
+            if (UserD == null ) {
                 return NotFound($"User with ID {id} not found.");
             }
-            clsUserData.UserDTO UDTO = User.UDTO;
+
+            var authResult = await authorizationService.AuthorizeAsync(
+     User,
+     new OwnershipResource
+     {
+         Id = id,
+         AdminCheack = true,
+         Type = OwnershipType.User
+     },
+     "UserOrAccountOwner"
+ );
+
+            if (!authResult.Succeeded)
+                return Forbid();
+
+            clsUserData.UserDTO UDTO = UserD.UDTO;
 
             return Ok(UDTO);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost(Name ="AddUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -69,38 +87,51 @@ namespace InventoryAPI.Controllers
             return CreatedAtRoute("GetUserById", new {AccountID ,id = newUserDTO.Id}, newUserDTO);
         }
 
-
+        
         [HttpPut("{id}",Name ="UpdateUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<clsUserData.UserDTO> UpdateUser(int id, clsUserData.UserDTO updatedUser)
+        public async Task<ActionResult<clsUserData.UserDTO>> UpdateUser(int id, clsUserData.UserDTO updatedUser, [FromServices] IAuthorizationService authorizationService)
         {
             if (id < 1 || updatedUser == null || string.IsNullOrEmpty(updatedUser.UserName))
             {
                 return BadRequest("Invalid User Data.");
             }
-            clsUser User = clsUser.FindByUserID(id);
+            clsUser UserD = clsUser.FindByUserID(id);
 
-            if (User == null) {
+            if (UserD == null) {
                 return NotFound($"User Not Found");
             }
-            User.UserName = updatedUser.UserName;
-            User.RoleInfo = clsRole.FindByName(updatedUser.RoleName);
-            User.RoleID = User.RoleInfo.RoleID;
-            User.IsActive = updatedUser.IsActive;
-            User.Save();
+            var authResult = await authorizationService.AuthorizeAsync(
+    User,
+    new OwnershipResource
+    {
+        Id = id,
+        AdminCheack = true,
+        Type = OwnershipType.User
+    },
+    "UserOrAccountOwner"
+);
 
-            return Ok(User.UDTO);
+            if (!authResult.Succeeded)
+                return Forbid();
+            UserD.UserName = updatedUser.UserName;
+            UserD.RoleInfo = clsRole.FindByName(updatedUser.RoleName);
+            UserD.RoleID = UserD.RoleInfo.RoleID;
+            UserD.IsActive = updatedUser.IsActive;
+            UserD.Save();
+
+            return Ok(UserD.UDTO);
         }
 
-
+        
         [HttpPatch("{id:int}", Name = "ChangePassword")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult ChangeUserPassword(
-            int id, [FromBody] string NewPassword)
+        public async Task<IActionResult> ChangeUserPassword(
+            int id,string OldPassword, [FromBody] string NewPassword, [FromServices] IAuthorizationService authorizationService)
         {
             if (id <= 0)
             {
@@ -111,6 +142,19 @@ namespace InventoryAPI.Controllers
             {
                 return BadRequest("Password cannot be empty.");
             }
+            var authResult = await authorizationService.AuthorizeAsync(
+    User,
+    new OwnershipResource
+    {
+        Id = id,
+        AdminCheack = true,
+        Type = OwnershipType.User
+    },
+    "UserOrAccountOwner"
+);
+
+            if (!authResult.Succeeded)
+                return Forbid();
 
             NewPassword = NewPassword.Trim();
 
@@ -131,6 +175,11 @@ namespace InventoryAPI.Controllers
                 return NotFound("User not found.");
             }
 
+            if (!user.VerifyPassword(OldPassword))
+            {
+                return BadRequest("password incorrect");
+            }
+
             if (!user.ChangePassword(NewPassword))
             {
                 return BadRequest("Failed to change the password.");
@@ -138,7 +187,7 @@ namespace InventoryAPI.Controllers
 
             return Ok("Password changed successfully.");
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPatch("{AccountID:int}/{id:int}/Deactivate", Name = "DeactivateUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

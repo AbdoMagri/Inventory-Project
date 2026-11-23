@@ -48,6 +48,8 @@ namespace userApi.Controllers
                 // Unique identifier for the user
                 new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
 
+                new Claim("AccountID", user.AccountID.ToString()),
+
 
                 // username
                 new Claim(ClaimTypes.Name, user.UserName),

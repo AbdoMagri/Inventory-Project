@@ -23,8 +23,9 @@
 //app.Run();
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.OpenApi;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -96,6 +97,13 @@ builder.Services.AddControllers();
 // Enables Swagger endpoint discovery.
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddSingleton<IAuthorizationHandler, OwnerHandler>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("UserOrAccountOwner", policy =>
+        policy.Requirements.Add(new OwnerRequirement()));
+});
 
 // Enables Swagger UI for testing and documentation.
 builder.Services.AddSwaggerGen(options =>

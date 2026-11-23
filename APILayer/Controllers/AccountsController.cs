@@ -3,6 +3,7 @@ using InventoryDB_DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace InventoryAPI.Controllers
 {
@@ -22,14 +23,29 @@ namespace InventoryAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<clsAccountData.AccountDTO> GetAccountById(int id)
+        public async Task<ActionResult<clsAccountData.AccountDTO>> GetAccountById(int id, [FromServices] IAuthorizationService authorizationService)
         {
+            
             if (id < 1)
                 return BadRequest($"Not accepted ID {id}");
 
             clsAccount Account = clsAccount.Find(id);
             if (Account == null)
                 return NotFound($"Account with ID {id} not found.");
+
+            var authResult = await authorizationService.AuthorizeAsync(
+     User,
+     new OwnershipResource
+     {
+         Id = id,
+         AdminCheack = false,
+         Type = OwnershipType.Account
+     },
+     "UserOrAccountOwner"
+ );
+
+            if (!authResult.Succeeded)
+                return Forbid();
 
             return Ok(Account.DTO);
         }
