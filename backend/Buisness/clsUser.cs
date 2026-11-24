@@ -23,6 +23,9 @@ namespace InventoryDB_Business
         public string UserName { set; get; }
         public string PasswordHash { private set; get; }
         public bool IsActive { set; get; }
+        public string RefreshTokenHash { get; set; }
+        public DateTime? RefreshTokenExpiresAt { get; set; }
+        public DateTime? RefreshTokenRevokedAt { get; set; }
 
         public clsUser()
         {
@@ -52,7 +55,7 @@ namespace InventoryDB_Business
             this.RoleID = RoleID;
             this.RoleInfo = clsRole.Find(RoleID);
             this.UserName = UserName;
-            this.PasswordHash = BCrypt.Net.BCrypt.HashPassword(Password); ;
+            this.PasswordHash = Password; ;
             this.IsActive = IsActive;
             Mode = enMode.Update;
         }

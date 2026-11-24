@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
-// This authorization handler enforces the ownership rule for student resources.
+// This authorization handler enforces the ownership rule for user resources.
 // It checks whether the current user is either:
 // - An Admin (full access), OR
-// - The owner of the student record being requested
+// - The owner of the user record being requested
 public enum OwnershipType
 {
     User,
