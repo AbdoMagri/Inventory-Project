@@ -1,0 +1,30 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+}
+.login-card {
+  background: #fff;
+  width: 100%;
+  max-width: 400px;
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+.login-card h2 { text-align: center; margin-bottom: 16px; }
+.login-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; }
+.tab {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+.tab.active { color: #2563eb; border-bottom-color: #2563eb; font-weight: 600; }
+.login-error { color: #dc2626; font-size: 13px; margin-bottom: 12px; }
